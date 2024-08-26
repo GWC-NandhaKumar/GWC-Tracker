@@ -1,0 +1,1772 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Tracker</title>
+    <script src="./static/lib/tailwindcss.js"></script>
+    <link href="https://cdn.datatables.net/v/dt/dt-2.0.3/datatables.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.datatables.net/v/dt/dt-2.0.3/datatables.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link rel="stylesheet" href="./side_bar.css">
+    <script src="./side_bar.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,200;0,300;0,400&display=swap');
+
+        body {
+            font-family: 'Montserrat';
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0, 0, 0);
+            background-color: rgba(0, 0, 0, 0.4);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 8px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Tooltip styling */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            position: absolute;
+            background-color: #ffffff;
+            border: 1px solid #cccccc;
+            padding: 10px;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 1;
+            width: max-content;
+            bottom: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%);
+            transition: opacity 0.3s ease;
+            opacity: 0;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+
+        @keyframes slideDown {
+            0% {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .slide-down {
+            animation: slideDown 0.5s ease-out;
+        }
+
+        .input-container {
+            position: relative;
+        }
+
+        .autocomplete-list {
+            position: relative;
+            z-index: 10;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            width: 50%;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .autocomplete-list li {
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        .autocomplete-list li:hover {
+            background-color: #f1f1f1;
+        }
+
+        label[for="dt-length-0"] {
+            display: none;
+        }
+
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+          }
+      
+          /* Hide scrollbar for IE, Edge and Firefox */
+          .hide-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+          }
+          table.dataTable tbody tr td {
+            padding: 5px 4px !important; 
+          }
+
+          /* Custom styling for date input and buttons */
+/* Custom styling for date input and buttons */
+#dateFilterInput {
+    width: 160px;
+}
+
+#clearFilterBtn,
+#refreshTableBtn {
+    min-width: 120px;
+}
+
+
+         
+    </style>
+    <!-- <script src="./static/lib/ckeditor5/ckeditor.js"></script>
+    <script>
+       document.addEventListener('DOMContentLoaded', function () {
+    var textareas = document.getElementsByTagName('textarea');
+    Array.from(textareas).forEach(function (textarea) {
+        ClassicEditor
+            .create(textarea, {
+                
+            })
+            .then(editor => {
+                console.log(editor);
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    });
+});
+    </script> -->
+</head>
+
+<body class="bg-[#fafdff] text-gray-800 relative">
+    <div class="absolute left-[600px] top-[10px] z-20 slide-down " id="notification_card" style="display: none;">
+        <div
+            class="absolute  shadow-md rounded-md left-[600px] top-[10px] z-20 bg-[#3e7a2a]  w-[270px]  p-2  slide-down">
+            <p class="text-center text-[#ffff] flex items-center justify-between" id="response_msg">updated successfully
+                <img src="./static/img/white_cancel.svg" class="w-6 h-6 object-contain" alt=""></p>
+        </div>
+    </div>
+
+    <div id="notification"
+        class="hidden fixed top-5 right-5 max-w-xs w-full p-4 border-l-4 rounded-lg shadow-lg transition-transform transform duration-300 ease-in-out translate-y-10">
+        <span id="notification-message" class="text-white text-sm font-medium"></span>
+    </div>
+
+
+    <div class="flex min-h-screen p-5">
+        <div class="bg-[#006ca5] text-white p-5 w-[250px] rounded-2xl hidden md:block ">
+            <a href="index.html"><img src="./static/img/logo.svg" class="w-30 h-[70px] object-contain mb-5 pl-4 pr-4 bg-[#ffff]" alt="Logo"></a>
+            <a href="index.html" class="flex items-center justify-between no-underline p-3 mb-2 text-[#ffff]  font-bold rounded-lg transition-colors duration-300 hover:bg-[#9dd1fa] hover:text-[#000] " id="hover-area" onmouseover="showHoverImg(this)" onmouseout="hideHoverImg(this)">
+                <span class="">Home</span>
+                
+                <img src="./static/img/home_white.svg" id="default-img" class="w-5 h-auto " alt="Plus Icon">
+                <img src="./static/img/home.svg"  id="hover-img" class="w-5 h-auto " alt="Plus Icon">
+            </a>
+            <a href="addprojects.html" class="flex items-center justify-between text-[#ffff] font-bold no-underline p-3 mb-2 rounded-lg transition-colors duration-300 hover:bg-[#9dd1fa]  hover:text-[#000]" onmouseover="showHoverImg(this)" onmouseout="hideHoverImg(this)">
+                <span class="">Add Prospect </span>
+                <img src="./static/img/plus_white.svg" id="default-img" class="w-5 h-auto" alt="Plus Icon">
+                <img src="./static/img/plus.svg" id="hover-img" class="w-5 h-auto" alt="Plus Icon">
+            </a>
+            <a href="./listProject.html" class="flex items-center justify-between text-[#ffff]  font-bold  no-underline p-3 mb-2 rounded-lg transition-colors duration-300   hover:bg-[#9dd1fa]  hover:text-[#000]" onmouseover="showHoverImg(this)" onmouseout="hideHoverImg(this)">
+                <span class="">Project List</span>
+                <img src="./static/img/list_white.svg" id="default-img" class="w-5 h-auto" alt="List Icon">
+                <img src="./static/img/list.svg" id="hover-img"  class="w-5 h-auto" alt="List Icon">
+            </a>
+            <a href="./archieve_list.html"
+            class="flex items-center justify-between   font-bold  no-underline p-3 mb-2 rounded-lg transition-colors duration-300 bg-[#9dd1fa] text-[#000] " onmouseover="showHoverImg(this)" onmouseout="hideHoverImg(this)">
+            <span class="">Archieve Projects</span>
+            <!-- <img src="./static/img/archive-files-icon_white.svg" id="default-img" class="w-5 h-auto" alt="Archieve Icon"> -->
+            <img src="./static/img/archive-files-icon.svg" id="" class="w-5 h-auto" alt="Archieve Icon">
+         </a>
+
+            <!-- <button  onclick="generatePDF()">Pdf</button> -->
+        
+        </div>
+        <div class="flex-1 ml-5">
+            <div class="flex justify-between items-center mb-5">
+                <div class="flex items-center">
+                    <img src="./static/img/waving.png" class="w-8 h-auto mr-2" alt="Waving Hand Icon">
+                    <span class="text-lg font-bold">Welcome back</span>
+                </div>
+            </div>
+            <div class="bg-white p-2 rounded-2xl shadow-md  bg-[#d4ebfc]  flex flex-col justify-center ">
+                <div class="bg-white overflow-auto">
+                    <!-- <div id="ListProjectTable" class="px-4  overflow-x-auto hide-scrollbar  ">
+                        <div class="">
+                            <table id="myTable" class="min-w-screen-lg bg-white ">
+                                <thead class=" text-black uppercase   ">
+                                    <tr class="text-[12px] ">
+                                        <th class="text-left text-violet-900">Project Name</th>
+                                       
+                                        <th class="text-left text-violet-900">GWC Account Manager</th>
+                                        <th class="text-left text-violet-900">GWC Project Lead</th>
+                                       
+                                        <th class="text-left text-violet-900">Started Date</th>
+                                        <th class="text-left text-violet-900">Pre-Sales</th>
+                                        <th class="text-left text-violet-900">Project Initiation</th>
+                                        <th class="text-left text-violet-900">Project Execution</th>
+                                        <th class="text-left text-violet-900">Project Closure</th>
+                                        <th class="text-left text-violet-900">Innovation Project</th>
+                                       
+                                    </tr>
+                                </thead>
+                                <tbody id="projectTableBody" class=" text-[15px] font-medium w-full">
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div> -->
+                    <div id="ListProjectTable" class="px-4  bg-[#d4ebfc] overflow-x-auto hide-scrollbar">
+                        <div class="relative">
+
+                            <div class="" id="date_filter_archived_page" style="display: none;">
+                                <div class="absolute top-[4px] left-[450px]  z-10">
+                                    <div class="flex justify-end items-center space-x-4 mb-4">
+                                        <div class="relative">
+                                            <input id="dateFilterInput" type="date" class="border border-blue-300 px-3 py-2 rounded-lg text-sm leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                            <!-- <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                                <i class="fa-solid fa-calendar-days text-blue-400 cursor-pointer" id="calendarIcon"></i>
+                                            </div> -->
+                                        </div>
+                                        <button id="clearFilterBtn" class="flex items-center px-4 py-2 bg-red-200 hover:bg-red-300 text-red-700 rounded-lg text-sm leading-tight focus:outline-none">
+                                            <i class="fa-solid fa-xmark mr-2"></i>
+                                            Clear
+                                        </button>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                    
+                            <table id="myTable" class="min-w-screen-lg  mt-4 bg-[#d4ebfc] ">
+                                <thead class="text-black uppercase">
+                                    <tr class="text-[12px]">
+                                        <th class="text-left text-violet-900">Project Name</th>
+                                        <th class="text-left text-violet-900">Account Manager</th>
+                                        <th class="text-left text-violet-900">Project Lead</th>
+                                        <th class="text-left text-violet-900">Lead Date</th>
+                                        <th class="text-left text-violet-900">Pre-Sales</th>
+                                        <th class="text-left text-violet-900">Initiation</th>
+                                        <th class="text-left text-violet-900">Execution</th>
+                                        <th class="text-left text-violet-900">Closure</th>
+                                        <th class="text-left text-violet-900">Innovative</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="projectTableBody" class="text-[15px] bg-[#d4ebfc]  font-medium w-full">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                           
+                    <div id="PreSalePopUp" class="bg-white rounded-lg inset-0 z-10 hidden overflow-y-auto max-h-screen w-full px-8 pb-8">
+
+                        <div class="flex items-center justify-between sticky top-0 z-20  bg-[#ffff] pb-3   mb-4">
+                            <a href="listProject.html" class=" rounded-md p-2 bg-[#008080] hover:bg-[#000]">
+                             <p class="font-medium text-[#ffff] ">Back</p>   
+                            </a>
+                            <h2 class="text-xl font-bold text-gray-800 mx-auto">Project PreSales Stage</h2>
+                        </div>
+                        
+            
+                        <form id="PresalesForm" class="stage1">
+                            <input type="hidden" value="" id="project_leaddate" name="project_leaddate"
+                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                            <input type="hidden" value="" id="project_id" name="project_id"
+                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                            <input type="hidden" value="" id="stageName" name="stageName"
+                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                            <div class="mb-4">
+                                <label for="status" class="block text-lg font-medium text-gray-700">Status</label>
+                                <select id="PresaleStatus" name="PresaleStatus" value=""
+                                    class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                    <option>Initial Meeting</option>
+                                    <option>POC Development</option>
+                                    <option>Needs Assessment</option>
+                                    <option>Proposal Shared</option>
+                                    <option>Waiting for Client's Reply</option>
+                                    <option>GWC's Delay</option>
+                                    <option>Closed Lost</option>
+                                    <option>Closed Won</option>
+                                </select>
+
+                            </div>
+                            <div class="mb-4">
+                                <button type="button" onclick="addCommentBox('stage1')"
+                                    class="mt-5 bg-[#468CCA] text-white px-4 py-2 rounded-md hover:bg-[#000]">Add
+                                    Project Comments/Remarks</button>
+                                <div id="commentsContainer" class="mt-4"></div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h3 class="text-xl font-bold mb-4">POC Developers</h3>
+                                <button type="button" onclick="addPOCDeveloper()"
+                                    class="mt-5 bg-[#468CCA] text-white px-4 py-2 rounded-md hover:bg-[#000]">Add POC
+                                    Developer</button>
+                                <div id="POCDevelopersContainer" class="mt-4 space-y-2"></div>
+                            </div>
+                            <!-- Checklist -->
+                            <!-- <div class="mb-6">
+                                <h3 class="text-xl font-bold mb-4">Checklist</h3>
+                                <div class="space-y-6 p-4 border rounded-md shadow-sm bg-gray-50" id="checklist-items">
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="1">
+                                        <label class="block font-medium text-gray-700 mb-2 ">1. Initial
+                                            Engagement</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="engagement-1" value="yes"
+                                                    onchange="handleRadioChange(event, 1,'stage1')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="engagement-1" value="no"
+                                                    onchange="handleRadioChange(event, 1,'stage1')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-1" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-1" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="2">
+                                        <label class="block font-medium text-gray-700 mb-2">2. Needs Assessment</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="engagement-2" value="yes"
+                                                    onchange="handleRadioChange(event, 2,'stage1')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="engagement-2" value="no"
+                                                    onchange="handleRadioChange(event, 2,'stage1')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-2" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-2" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="3">
+                                        <label class="block font-medium text-gray-700 mb-2">3. Feasibility Test</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="engagement-3" value="yes"
+                                                    onchange="handleRadioChange(event, 3,'stage1')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="engagement-3" value="no"
+                                                    onchange="handleRadioChange(event, 3,'stage1')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-3" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-3" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="4">
+                                        <label class="block font-medium text-gray-700 mb-2">4. Solution Proposal</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="engagement-4" value="yes"
+                                                    onchange="handleRadioChange(event, 4,'stage1')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="engagement-4" value="no"
+                                                    onchange="handleRadioChange(event, 4,'stage1')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-4" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-4" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="5">
+                                        <label class="block font-medium text-gray-700 mb-2">5. Demo/POC</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="engagement-5" value="yes"
+                                                    onchange="handleRadioChange(event, 5,'stage1')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="engagement-5" value="no"
+                                                    onchange="handleRadioChange(event, 5,'stage1')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-5" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-5" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="6">
+                                        <label class="block font-medium text-gray-700 mb-2">6. Proposal
+                                            Submission</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="engagement-6" value="yes"
+                                                    onchange="handleRadioChange(event, 6,'stage1')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="engagement-6" value="no"
+                                                    onchange="handleRadioChange(event, 6,'stage1')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-6" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-6" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="7">
+                                        <label class="block font-medium text-gray-700 mb-2">7. Contract
+                                            Negotiation</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="engagement-7" value="yes"
+                                                    onchange="handleRadioChange(event, 7,'stage1')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="engagement-7" value="no"
+                                                    onchange="handleRadioChange(event, 7,'stage1')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-7" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-7" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="8">
+                                        <label class="block font-medium text-gray-700 mb-2">8. Deliverables</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="engagement-8" value="yes"
+                                                    onchange="handleRadioChange(event, 8,'stage1')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="engagement-8" value="no"
+                                                    onchange="handleRadioChange(event, 8,'stage1')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-8" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-8" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+
+                                    
+                                </div>
+                                <div class="mt-4 ">
+                                    <label for="OverallStageStatus"
+                                        class="block text-lg font-medium text-gray-700 mt-4">
+                                        Is it okay to move to the
+                                            next stage?
+                                        <div class="tooltip  cursor-pointer">
+                                            <i class="fas fa-info-circle text-gray-500"></i>
+                                            <div
+                                                class="tooltiptext bg-white shadow-md border border-gray-200 p-2 rounded-md text-sm">
+                                                <p> Mark this field as 'Completed' to enable the next stage.</p>
+                                            </div>
+                                        </div>
+                                    </label>
+
+
+                                    <select id="OverallStageStatus"
+                                        name="OverallStageStatus"
+                                        class="border border-gray-200 outline-[#6E2F8E] mt-1 block w-full text-2xl p-2 h-auto rounded-md sm:text-sm">
+                                        <option>Active</option>
+                                        <option>Completed</option>
+                                    </select>
+
+                              
+                                </div>
+                            </div> -->
+                            <div class="mb-6">
+                                <h3 class="text-xl font-bold mb-4">Checklist</h3>
+                                <div class="space-y-6 p-4 border rounded-md shadow-sm bg-gray-50" id="checklist-items">
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="1">
+                                        <label class="block font-medium text-gray-700 mb-2">1. Initial Engagement</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="engagement-1" value="yes"
+                                                    onchange="handleRadioChange(event, 1,'stage1')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="engagement-1" value="no"
+                                                    onchange="handleRadioChange(event, 1,'stage1')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-1" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-1" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="2">
+                                        <label class="block font-medium text-gray-700 mb-2">2. Needs Assessment</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="engagement-2" value="yes"
+                                                    onchange="handleRadioChange(event, 2,'stage1')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="engagement-2" value="no"
+                                                    onchange="handleRadioChange(event, 2,'stage1')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-2" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-2" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="3">
+                                        <label class="block font-medium text-gray-700 mb-2">3. Feasibility Test</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="engagement-3" value="yes"
+                                                    onchange="handleRadioChange(event, 3,'stage1')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="engagement-3" value="no"
+                                                    onchange="handleRadioChange(event, 3,'stage1')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-3" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-3" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="4">
+                                        <label class="block font-medium text-gray-700 mb-2">4. Solution Proposal</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="engagement-4" value="yes"
+                                                    onchange="handleRadioChange(event, 4,'stage1')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="engagement-4" value="no"
+                                                    onchange="handleRadioChange(event, 4,'stage1')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-4" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-4" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="5">
+                                        <label class="block font-medium text-gray-700 mb-2">5. Demo/POC</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="engagement-5" value="yes"
+                                                    onchange="handleRadioChange(event, 5,'stage1')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="engagement-5" value="no"
+                                                    onchange="handleRadioChange(event, 5,'stage1')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-5" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-5" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="6">
+                                        <label class="block font-medium text-gray-700 mb-2">6. Proposal
+                                            Submission</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="engagement-6" value="yes"
+                                                    onchange="handleRadioChange(event, 6,'stage1')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="engagement-6" value="no"
+                                                    onchange="handleRadioChange(event, 6,'stage1')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-6" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-6" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="7">
+                                        <label class="block font-medium text-gray-700 mb-2">7. Contract
+                                            Negotiation</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="engagement-7" value="yes"
+                                                    onchange="handleRadioChange(event, 7,'stage1')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="engagement-7" value="no"
+                                                    onchange="handleRadioChange(event, 7,'stage1')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-7" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-7" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="8">
+                                        <label class="block font-medium text-gray-700 mb-2">8. Deliverables</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="engagement-8" value="yes"
+                                                    onchange="handleRadioChange(event, 8,'stage1')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="engagement-8" value="no"
+                                                    onchange="handleRadioChange(event, 8,'stage1')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-8" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-8" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+
+                                    
+                                </div>
+                                <div class="mt-4 ">
+                                    <label for="OverallStageStatus"
+                                        class="block text-lg font-medium text-gray-700 mt-4">
+                                        Is it okay to move to the
+                                            next stage?
+                                        <div class="tooltip  cursor-pointer">
+                                            <i class="fas fa-info-circle text-gray-500"></i>
+                                            <div
+                                                class="tooltiptext bg-white shadow-md border border-gray-200 p-2 rounded-md text-sm">
+                                                <p> Mark this field as 'Completed' to enable the next stage.</p>
+                                            </div>
+                                        </div>
+                                    </label>
+
+
+                                    <select id="OverallStageStatus"
+                                        name="OverallStageStatus"
+                                        class="border border-gray-200 outline-[#6E2F8E] mt-1 block w-full text-2xl p-2 h-auto rounded-md sm:text-sm">
+                                        <option>Active</option>
+                                        <option>Completed</option>
+                                    </select>
+
+                              
+                                </div>
+                            </div>
+                            
+                            
+
+                            
+                            
+                            <div class="mt-6 flex justify-center">
+                                <button type="button" onclick="PresalescollectFormData()"
+                                    class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-800">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+
+
+                    <!--project initiation.........  -->
+
+                    <div id="ProjectInitiationPopUp" class="bg-white rounded-lg inset-0 z-10 hidden overflow-y-auto max-h-screen w-full px-8 pb-8">
+
+                        <div class="flex items-center justify-between sticky top-0 z-20  bg-[#ffff] pb-3   mb-4">
+                            <a href="listProject.html" class=" rounded-md p-2 bg-[#008080] hover:bg-[#000]">
+                             <p class="font-medium text-[#ffff] ">Back</p>   
+                            </a>
+                            <h2 class="text-xl font-bold text-gray-800 mx-auto">Project Initiation Stage</h2>
+                        </div>
+                      
+                      
+
+                        <form id="Projectinitationform" class="stage2 space-y-6">
+                            <input type="hidden" value="" id="project_leaddate" name="project_leaddate">
+                            <input type="hidden" value="" id="project_id" name="project_id"
+                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                            <input type="hidden" value="ProjectinitationStage" id="stageName" name="stageName"
+                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Timeline -->
+                                <div>
+                                    <label for="Timeline"
+                                        class="block text-lg font-medium text-gray-700">Timeline</label>
+                                    <div class="flex space-x-2">
+                                        <input type="number" id="TimelineValue" name="TimelineValue"
+                                            class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm"
+                                            placeholder="Hours/Days/Weeks/Months">
+                                        <select id="TimelineUnit" name="TimelineUnit"
+                                            class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                            <option>Hours</option>
+                                            <option>Days</option>
+                                            <option>Weeks</option>
+                                            <option>Months</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Date Selection -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label for="ProposedStartDate"
+                                        class="block text-lg font-medium text-gray-700">Proposed Start Date</label>
+                                    <input type="date" id="ProposedStartDate" name="ProposedStartDate"
+                                        class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                </div>
+
+                                <div>
+                                    <label for="ProposedEndDate"
+                                        class="block text-lg font-medium text-gray-700">Proposed End Date</label>
+                                    <input type="date" id="ProposedEndDate" name="ProposedEndDate"
+                                        class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                </div>
+                            </div>
+
+                            <!-- Resources -->
+                            <div class="grid gap-6">
+
+
+                                <div>
+                                    <label for="Resources"
+                                        class="block text-lg font-medium text-gray-700">Resources</label>
+                                    <button type="button" onclick="addResources()"
+                                        class="mt-5 bg-[#468CCA] text-white px-4 py-2 rounded-md hover:bg-[#000]">Add
+                                        Resources List</button>
+                                    <div id="ResourcesContainer" class="space-y-2"></div>
+                                </div>
+                            </div>
+
+                            <!-- SOW Signed -->
+                            <div>
+                                <label for="SOWSigned" class="block text-lg font-medium text-gray-700">SOW
+                                    Signed</label>
+                                <select id="SOWSigned" name="SOWSigned"
+                                    class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                    <option>Yes</option>
+                                    <option>No</option>
+                                </select>
+                            </div>
+
+                            <!-- Comments/Notes -->
+                            <div class="mb-4">
+                                <button type="button" onclick="addCommentBox('stage2')"
+                                    class="mt-5 bg-[#468CCA] text-white px-4 py-2 rounded-md hover:bg-[#000]">Add
+                                    Project Comments/Remarks</button>
+                                <div id="commentsContainer" class="mt-4"></div>
+                            </div>
+
+                            <!-- Checklist -->
+                            <div class="mb-6">
+                                <h3 class="text-xl font-bold mb-4">Checklist</h3>
+                                <div class=" space-y-6 p-4 border rounded-md shadow-sm bg-gray-50" id="checklist-items">
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="1">
+                                        <label class="block font-medium text-gray-700 mb-2">1. Project Kick-off
+                                            Meeting</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage2-1" value="yes"
+                                                    onchange="handleRadioChange(event, 1,'stage2')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage2-1" value="no"
+                                                    onchange="handleRadioChange(event, 1,'stage2')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-1" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-1" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="2">
+                                        <label class="block font-medium text-gray-700 mb-2">2. Project
+                                            Charter/Plan</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage2-2" value="yes"
+                                                    onchange="handleRadioChange(event, 2,'stage2')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage2-2" value="no"
+                                                    onchange="handleRadioChange(event, 2,'stage2')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-2" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-2" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="3">
+                                        <label class="block font-medium text-gray-700 mb-2">3. Scope Definition</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage2-3" value="yes"
+                                                    onchange="handleRadioChange(event, 3,'stage2')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage2-3" value="no"
+                                                    onchange="handleRadioChange(event, 3,'stage2')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-3" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-3" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="4">
+                                        <label class="block font-medium text-gray-700 mb-2">4. WBS</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage2-4" value="yes"
+                                                    onchange="handleRadioChange(event, 4,'stage2')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage2-4" value="no"
+                                                    onchange="handleRadioChange(event, 4,'stage2')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-4" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-4" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="5">
+                                        <label class="block font-medium text-gray-700 mb-2">5. Schedule
+                                            Development</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage2-5" value="yes"
+                                                    onchange="handleRadioChange(event, 5,'stage2')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage2-5" value="no"
+                                                    onchange="handleRadioChange(event, 5,'stage2')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-5" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-5" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="6">
+                                        <label class="block font-medium text-gray-700 mb-2">6. Resources
+                                            Planning</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage2-6" value="yes"
+                                                    onchange="handleRadioChange(event, 6,'stage2')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage2-6" value="no"
+                                                    onchange="handleRadioChange(event, 6,'stage2')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-6" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-6" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="7">
+                                        <label class="block font-medium text-gray-700 mb-2">7. Budget Planning</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage2-7" value="yes"
+                                                    onchange="handleRadioChange(event, 7,'stage2')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage2-7" value="no"
+                                                    onchange="handleRadioChange(event, 7,'stage2')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-7" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-7" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="8">
+                                        <label class="block font-medium text-gray-700 mb-2">8. Risk Management
+                                            Plan</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage2-8" value="yes"
+                                                    onchange="handleRadioChange(event, 8,'stage2')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage2-8" value="no"
+                                                    onchange="handleRadioChange(event, 8,'stage2')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-8" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-8" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="9">
+                                        <label class="block font-medium text-gray-700 mb-2">9. Communication
+                                            Plan</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage2-9" value="yes"
+                                                    onchange="handleRadioChange(event, 9,'stage2')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage2-9" value="no"
+                                                    onchange="handleRadioChange(event, 9,'stage2')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-9" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-9" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="10">
+                                        <label class="block font-medium text-gray-700 mb-2">8. Deliverables</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage2-10" value="yes"
+                                                    onchange="handleRadioChange(event, 10,'stage2')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage2-10" value="no"
+                                                    onchange="handleRadioChange(event, 10,'stage2')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-10" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-10" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-4 ">
+                                    <label for="ProjectinitationOverallStageStatus"
+                                        class="block text-lg font-medium text-gray-700 mt-4">
+                                        Is it okay to move to the
+                                            next stage?
+                                        <div class="tooltip  cursor-pointer">
+                                            <i class="fas fa-info-circle text-gray-500"></i>
+                                            <div
+                                                class="tooltiptext bg-white shadow-md border border-gray-200 p-2 rounded-md text-sm">
+                                                <p> Mark this field as 'Completed' to enable the next stage.</p>
+                                            </div>
+                                        </div>
+                                    </label>
+
+
+                                    <select id="ProjectinitationOverallStageStatus"
+                                        name="ProjectinitationOverallStageStatus"
+                                        class="border border-gray-200 outline-[#6E2F8E] mt-1 block w-full text-2xl p-2 h-auto rounded-md sm:text-sm">
+                                        <option>Active</option>
+                                        <option>Completed</option>
+                                    </select>
+
+                                </div>
+                                
+
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="flex justify-center">
+                                <button type="button" onclick="ProjectInitiationcollectFormData()"
+                                    class="bg-yellow-400 text-white px-4 py-2 rounded">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- ProjectExecution -->
+
+                    <div id="ProjectExecutionPopUp" class="bg-white rounded-lg inset-0 z-10 hidden overflow-y-auto max-h-screen w-full px-8 pb-8">
+
+                        <div class="flex items-center justify-between sticky top-0 z-20  bg-[#ffff] pb-3   mb-4">
+                            <a href="listProject.html" class=" rounded-md p-2 bg-[#008080] hover:bg-[#000]">
+                             <p class="font-medium text-[#ffff] ">Back</p>   
+                            </a>
+                            <h2 class="text-xl font-bold text-gray-800 mx-auto">Project Execution Stage</h2>
+                        </div>
+                    
+                    
+
+                        <form id="ProjectExecutionform" class="stage3 space-y-6">
+                            <input type="hidden" value="" id="project_leaddate" name="project_leaddate">
+                            <input type="hidden" value="" id="project_id" name="project_id" class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                            <input type="hidden" value="ProjectExecutionStage" id="stageName" name="stageName" class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label for="ActualStartDate" class="block text-lg font-medium text-gray-700">Actual
+                                        Start Date</label>
+                                    <input type="date" id="ActualStartDate" name="ActualStartDate"
+                                        class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                </div>
+
+                                <div>
+                                    <label for="ActualEndDate" class="block text-lg font-medium text-gray-700">Actual
+                                        End Date</label>
+                                    <input type="date" id="ActualEndDate" name="ActualEndDate"
+                                        class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                </div>
+                            </div>
+
+                            <div class="mt-6">
+                                <label for="PercentComplete" class="block text-lg font-medium text-gray-700">%
+                                    Complete</label>
+                                <input type="number" id="PercentComplete" name="PercentComplete"
+                                    class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm"
+                                    placeholder="Percentage">
+                            </div>
+
+                            <div class="mt-6">
+                                <label for="DelayRisk"
+                                    class="block text-lg font-medium text-gray-700">Delay/Risk</label>
+                                <textarea id="DelayRisk" name="DelayRisk" placeholder="Delay/Risks"
+                                    class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md  resize-none  sm:text-sm"></textarea>
+                            </div>
+
+
+
+                            <div class="mb-4">
+                                <button type="button" onclick="addCommentBox('stage3')"
+                                    class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md">Add
+                                    Project Comments/Remarks</button>
+                                <div id="commentsContainer" class="mt-4"></div>
+                            </div>
+
+                            <div class="mb-6">
+                                <h3 class="text-xl font-bold mb-4 text-gray-800">Checklist</h3>
+                                <div class="space-y-6 p-4 border rounded-md shadow-sm bg-gray-50" id="checklist-items">
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="1">
+                                        <label class="block font-medium text-gray-700 mb-2">1. Task Execution</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage3-1" value="yes"
+                                                    onchange="handleRadioChange(event, 1,'stage3')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage3-1" value="no"
+                                                    onchange="handleRadioChange(event, 1,'stage3')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-1" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-1" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="2">
+                                        <label class="block font-medium text-gray-700 mb-2">2. Data Gathering</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage3-2" value="yes"
+                                                    onchange="handleRadioChange(event, 2,'stage3')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage3-2" value="no"
+                                                    onchange="handleRadioChange(event, 2,'stage3')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-2" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-2" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="3">
+                                        <label class="block font-medium text-gray-700 mb-2">3. Solution
+                                            Development</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage3-3" value="yes"
+                                                    onchange="handleRadioChange(event, 3,'stage3')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage3-3" value="no"
+                                                    onchange="handleRadioChange(event, 3,'stage3')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-3" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-3" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="4">
+                                        <label class="block font-medium text-gray-700 mb-2">4. Stackholder
+                                            Engagement</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage3-4" value="yes"
+                                                    onchange="handleRadioChange(event, 4,'stage3')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage3-4" value="no"
+                                                    onchange="handleRadioChange(event, 4,'stage3')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-4" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-4" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="5">
+                                        <label class="block font-medium text-gray-700 mb-2">5. Performance
+                                            Tracking</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage3-5" value="yes"
+                                                    onchange="handleRadioChange(event, 5,'stage3')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage3-5" value="no"
+                                                    onchange="handleRadioChange(event, 5,'stage3')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-5" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-5" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="6">
+                                        <label class="block font-medium text-gray-700 mb-2">6. Change Control</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage3-6" value="yes"
+                                                    onchange="handleRadioChange(event, 6,'stage3')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage3-6" value="no"
+                                                    onchange="handleRadioChange(event, 6,'stage3')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-6" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-6" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="7">
+                                        <label class="block font-medium text-gray-700 mb-2">7. Risk Issue
+                                            Management</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage3-7" value="yes"
+                                                    onchange="handleRadioChange(event, 7,'stage3')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage3-7" value="no"
+                                                    onchange="handleRadioChange(event, 7,'stage3')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-7" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-7" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="8">
+                                        <label class="block font-medium text-gray-700 mb-2">8. Deliverables</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage3-8" value="yes"
+                                                    onchange="handleRadioChange(event, 8,'stage3')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage3-8" value="no"
+                                                    onchange="handleRadioChange(event, 8,'stage3')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-8" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-8" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4 ">
+                                    <label for="ProjectExecutionOverallStageStatus"
+                                        class="block text-lg font-medium text-gray-700 mt-4">
+                                        Is it okay to move to the
+                                            next stage?
+                                        <div class="tooltip  cursor-pointer">
+                                            <i class="fas fa-info-circle text-gray-500"></i>
+                                            <div
+                                                class="tooltiptext bg-white shadow-md border border-gray-200 p-2 rounded-md text-sm">
+                                                <p> Mark this field as 'Completed' to enable the next stage.</p>
+                                            </div>
+                                        </div>
+                                    </label>
+
+
+                                    <select id="ProjectExecutionOverallStageStatus"
+                                        name="ProjectExecutionOverallStageStatus"
+                                        class="border border-gray-200 outline-[#6E2F8E] mt-1 block w-full text-2xl p-2 h-auto rounded-md sm:text-sm">
+                                        <option>Active</option>
+                                        <option>Completed</option>
+                                    </select>
+
+                                </div>
+
+                               
+
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="flex justify-center">
+                                <button type="button" onclick="ProjectExecutionCollectFromData()"
+                                    class="bg-yellow-400 text-white px-4 py-2 rounded">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- ProjectClosure Form -->
+                    <div id="ProjectClosurePopUp"  class="bg-white rounded-lg inset-0 z-10 hidden overflow-y-auto max-h-screen w-full px-8 pb-8">
+
+                        <div class="flex items-center justify-between sticky top-0 z-20  bg-[#ffff] pb-3   mb-4">
+                            <a href="listProject.html" class=" rounded-md p-2 bg-[#008080] hover:bg-[#000]">
+                             <p class="font-medium text-[#ffff] ">Back</p>   
+                            </a>
+                            <h2 class="text-xl font-bold text-gray-800 mx-auto">Project Closure Stage</h2>
+                        </div>
+
+                        <form id="ProjectClosureform" class="stage4 space-y-6">
+                            <input type="hidden" value="" id="project_leaddate" name="project_leaddate">
+                            <input type="hidden" value="" id="project_id" name="project_id" class="border border-gray-200 outline-[#6E2F8E] mt-1 block w-full text-2xl p-2 h-auto rounded-md sm:text-sm">
+                            <input type="hidden" value="ProjectClosureStage" id="stageName" name="stageName" class="border border-gray-200 outline-[#6E2F8E] mt-1 block w-full text-2xl p-2 h-auto rounded-md sm:text-sm">
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label for="CompletionDate"
+                                        class="block text-lg font-medium text-gray-700">Completion Date</label>
+                                    <input type="date" id="CompletionDate" name="CompletionDate"
+                                        class="border border-gray-200 outline-[#6E2F8E] mt-1 block w-full text-2xl p-2 h-auto rounded-md sm:text-sm">
+                                </div>
+
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div>
+                                    <label for="Payment Received"
+                                        class="block text-lg font-medium text-gray-700">Payment Received</label>
+                                    <select id="PaymentReceived" name="PaymentReceived"
+                                        class="border border-gray-200 outline-[#6E2F8E] mt-1 block w-full text-2xl p-2 h-auto rounded-md sm:text-sm">
+                                        <option>Yes</option>
+                                        <option>No</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="Client Acceptance"
+                                        class="block text-lg font-medium text-gray-700">Client Acceptance</label>
+                                    <select id="ClientAcceptance" name="ClientAcceptance"
+                                        class="border border-gray-200 outline-[#6E2F8E] mt-1 block w-full text-2xl p-2 h-auto rounded-md sm:text-sm">
+                                        <option>Sign-off Received</option>
+                                        <option>Sign-off yet to receive</option>
+                                        <option>Outstanding Issue</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="Project Documentation"
+                                        class="block text-lg font-medium text-gray-700">Project Documentation</label>
+                                    <select id="ProjectDocumentation" name="ProjectDocumentation"
+                                        class="border border-gray-200 outline-[#6E2F8E] mt-1 block w-full text-2xl p-2 h-auto rounded-md sm:text-sm">
+                                        <option>Yes</option>
+                                        <option>No</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <button type="button" onclick="addCommentBox('stage4')"
+                                    class="mt-5 bg-[#468CCA] text-white px-4 py-2 rounded-md hover:bg-[#000]">Add
+                                    Project Comments/Remarks</button>
+                                <div id="commentsContainer" class="mt-4"></div>
+                            </div>
+
+                            <div class="mb-6">
+                                <h3 class="text-xl font-bold mb-4 text-gray-800">Checklist</h3>
+                                <div class=" space-y-6 p-4 border rounded-md shadow-sm bg-gray-50" id="checklist-items">
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="1">
+                                        <label class="block font-medium text-gray-700 mb-2">1. Final
+                                            Deliverables</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage4-1" value="yes"
+                                                    onchange="handleRadioChange(event, 1,'stage4')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage4-1" value="no"
+                                                    onchange="handleRadioChange(event, 1,'stage4')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-1" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-1" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="2">
+                                        <label class="block font-medium text-gray-700 mb-2">2. Client Acceptance</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage4-2" value="yes"
+                                                    onchange="handleRadioChange(event, 2,'stage4')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage4-2" value="no"
+                                                    onchange="handleRadioChange(event, 2,'stage4')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-2" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-2" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="3">
+                                        <label class="block font-medium text-gray-700 mb-2">3. Resource Release</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage4-3" value="yes"
+                                                    onchange="handleRadioChange(event, 3,'stage4')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage4-3" value="no"
+                                                    onchange="handleRadioChange(event, 3,'stage4')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-3" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-3" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="4">
+                                        <label class="block font-medium text-gray-700 mb-2">4. Post-Implementation
+                                            Review</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage4-4" value="yes"
+                                                    onchange="handleRadioChange(event, 4,'stage4')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage4-4" value="no"
+                                                    onchange="handleRadioChange(event, 4,'stage4')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-4" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-4" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="5">
+                                        <label class="block font-medium text-gray-700 mb-2">5. Onboarding and
+                                            Training</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage4-5" value="yes"
+                                                    onchange="handleRadioChange(event, 5,'stage4')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage4-5" value="no"
+                                                    onchange="handleRadioChange(event, 5,'stage4')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-5" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-5" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="6">
+                                        <label class="block font-medium text-gray-700 mb-2">6. Support and
+                                            Maintenance</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage4-6" value="yes"
+                                                    onchange="handleRadioChange(event, 6,'stage4')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage4-6" value="no"
+                                                    onchange="handleRadioChange(event, 6,'stage4')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-6" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-6" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="7">
+                                        <label class="block font-medium text-gray-700 mb-2">7. Performance
+                                            Monitoring</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage4-7" value="yes"
+                                                    onchange="handleRadioChange(event, 7,'stage4')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage4-7" value="no"
+                                                    onchange="handleRadioChange(event, 7,'stage4')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-7" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-7" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="8">
+                                        <label class="block font-medium text-gray-700 mb-2">8. Feedback
+                                            Collection</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage4-8" value="yes"
+                                                    onchange="handleRadioChange(event, 8,'stage4')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage4-8" value="no"
+                                                    onchange="handleRadioChange(event, 8,'stage4')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-8" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-8" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+                                    <div class="checklist-item p-4 bg-white rounded-md shadow-sm" data-id="9">
+                                        <label class="block font-medium text-gray-700 mb-2">9. Continuous
+                                            Improvement</label>
+                                        <div class="flex space-x-4 mb-2">
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage4-8" value="yes"
+                                                    onchange="handleRadioChange(event, 9,'stage4')" class="mr-2"> Yes
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="stage4-8" value="no"
+                                                    onchange="handleRadioChange(event, 9,'stage4')" class="mr-2"> No
+                                            </label>
+                                        </div>
+                                        <div id="yes-comment-9" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Comment"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                        <div id="no-comment-9" class="comment hidden mt-2">
+                                            <input type="text" placeholder="Why not?"
+                                                class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-4 ">
+                                    <label for="ProjectClosureOverallStageStatus"
+                                        class="block text-lg font-medium text-gray-700 mt-4">
+                                        Is this Project successfully Completed?
+                                        <div class="tooltip  cursor-pointer">
+                                            <i class="fas fa-info-circle text-gray-500"></i>
+                                            <div
+                                                class="tooltiptext bg-white shadow-md border border-gray-200 p-2 rounded-md text-sm">
+                                                <p>Then only overall project is completed</p>
+                                            </div>
+                                        </div>
+                                    </label>
+
+
+                                    <select id="ProjectClosureOverallStageStatus"
+                                        name="ProjectClosureOverallStageStatus"
+                                        class="border border-gray-200 outline-[#6E2F8E] mt-1 block w-full text-2xl p-2 h-auto rounded-md sm:text-sm">
+                                        <option>Active</option>
+                                        <option>Completed</option>
+                                    </select>
+
+                                </div>
+
+
+
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="flex  justify-center ">
+                                <button type="button" onclick="ProjectClosureCollectFromData()"
+                                    class="bg-yellow-400 text-white px-4 py-2 rounded">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <button id="to-top-button" onclick="goToTop()" title="Go To Top"
+        class="hidden fixed z-50 bottom-10 right-10 p-4 border-0 w-14 h-14 rounded-full shadow-md bg-purple-600 hover:bg-purple-700 text-white text-lg font-semibold transition-colors duration-300">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+            <path d="M12 4l8 8h-6v8h-4v-8H4l8-8z" />
+        </svg>
+        <span class="sr-only">Go to top</span>
+    </button>
+    <script>
+
+        const tooltipIcons = document.querySelectorAll('[id^="tooltip-icon"]');
+        const tooltips = document.querySelectorAll('[id^="tooltip-default"]');
+
+        tooltipIcons.forEach(tooltipIcon => {
+            tooltipIcon.addEventListener('mouseenter', () => {
+                const tooltipId = tooltipIcon.id.replace('tooltip-icon', 'tooltip-default');
+                const tooltip = document.getElementById(tooltipId);
+
+                if (tooltip) {
+                    tooltip.classList.remove('invisible', 'opacity-0');
+                    tooltip.classList.add('visible', 'opacity-100');
+                }
+            });
+
+            tooltipIcon.addEventListener('mouseleave', () => {
+                const tooltipId = tooltipIcon.id.replace('tooltip-icon', 'tooltip-default');
+                const tooltip = document.getElementById(tooltipId);
+
+                if (tooltip) {
+                    tooltip.classList.remove('visible', 'opacity-100');
+                    tooltip.classList.add('invisible', 'opacity-0');
+                }
+            });
+        });
+    </script>
+
+    <script>
+        var toTopButton = document.getElementById("to-top-button");
+
+        if (toTopButton) {
+
+            window.onscroll = function () {
+                if (document.body.scrollTop > 500 || document.documentElement.scrollTop > 500) {
+                    toTopButton.classList.remove("hidden");
+                } else {
+                    toTopButton.classList.add("hidden");
+                }
+            };
+
+            window.goToTop = function () {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            };
+        }
+    </script>
+    <script src="domo.js"></script>
+    <script src="archieve_list.js"></script>
+
+</body>
+
+</html>

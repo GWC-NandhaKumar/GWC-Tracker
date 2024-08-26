@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Dashboard - Add Project Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400&family=Poppins&display=swap" rel="stylesheet">
+    <script src="./static/lib/tailwindcss.js"></script>
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+        }
+    </style>
+    <link rel="stylesheet" href="./side_bar.css">
+
+</head>
+<body class="bg-[#fafdff]">
+
+    <div id="notification" class="hidden fixed top-5 right-5 max-w-xs w-full p-4 border-l-4 rounded-lg shadow-lg transition-transform transform duration-300 ease-in-out translate-y-10">
+        <span id="notification-message" class="text-white text-sm font-medium"></span>
+      </div>
+      
+    <div class="flex min-h-screen p-5">
+        <div class="bg-[#006ca5] text-white p-5 w-[250px] rounded-2xl hidden md:block ">
+            <a href="index.html"><img src="./static/img/logo.svg" class="w-30 h-[70px] object-contain mb-5 pl-4 pr-4 bg-[#ffff]" alt="Logo"></a>
+            <a href="index.html" class="flex items-center justify-between no-underline p-3 mb-2 text-[#ffff]  font-bold rounded-lg transition-colors duration-300 hover:bg-[#9dd1fa] hover:text-[#000] " id="hover-area" onmouseover="showHoverImg(this)" onmouseout="hideHoverImg(this)">
+                <span class="">Home</span>
+                
+                <img src="./static/img/home_white.svg" id="default-img" class="w-5 h-auto " alt="Plus Icon">
+                <img src="./static/img/home.svg"  id="hover-img" class="w-5 h-auto " alt="Plus Icon">
+            </a>
+            <a href="addprojects.html" class="flex items-center justify-between text-[#ffff]  font-bold no-underline p-3 mb-2 rounded-lg transition-colors duration-300 hover:bg-[#9dd1fa]  hover:text-[#000]" onmouseover="showHoverImg(this)" onmouseout="hideHoverImg(this)">
+                <span class="">Add Prospect </span>
+                <img src="./static/img/plus_white.svg" id="default-img" class="w-5 h-auto" alt="Plus Icon">
+                <img src="./static/img/plus.svg" id="hover-img" class="w-5 h-auto" alt="Plus Icon">
+            </a>
+            <a href="./listProject.html" class="flex items-center justify-between text-[#ffff]  font-bold  no-underline p-3 mb-2 rounded-lg transition-colors duration-300   hover:bg-[#9dd1fa]  hover:text-[#000]" onmouseover="showHoverImg(this)" onmouseout="hideHoverImg(this)">
+                <span class="">Project List</span>
+                <img src="./static/img/list_white.svg" id="default-img" class="w-5 h-auto" alt="List Icon">
+                <img src="./static/img/list.svg" id="hover-img"  class="w-5 h-auto" alt="List Icon">
+            </a>
+            <a href="./archieve_list.html"
+            class="flex items-center justify-between text-[#ffff]  font-bold  no-underline p-3 mb-2 rounded-lg transition-colors duration-300 hover:bg-[#9dd1fa] hover:text-[#000] " onmouseover="showHoverImg(this)" onmouseout="hideHoverImg(this)">
+            <span class="">Archieve Projects</span>
+            <img src="./static/img/archive-files-icon_white.svg" id="default-img" class="w-5 h-auto" alt="Archieve Icon">
+            <img src="./static/img/archive-files-icon.svg" id="hover-img" class="w-5 h-auto" alt="Archieve Icon">
+         </a>
+
+            <!-- <button  onclick="generatePDF()">Pdf</button> -->
+        
+        </div>
+        <div class="flex-1 ml-5">
+            <div class="bg-[#d4ebfc] p-4 rounded-2xl shadow-md">
+                <h2 class="text-2xl text-[#6D2F8E] font-bold mb-6" id="Project_name">Edit Prospect</h2>
+                <form id="project-form" class="space-y-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                            <label for="project-name" class="text-md font-bold block text-sm font-medium text-gray-700">Project Name</label>
+                            <input type="text" id="project-name" name="project-name" class="border border-gray-200 outline-[#6E2F8E] mt-1 block w-full text-md p-2 h-auto rounded-md sm:text-sm" required>
+                        </div>
+                        <div>
+                            <label for="client-name" class="text-md font-bold block text-sm font-medium text-gray-700">Client Name</label>
+                            <input type="text" id="client-name" name="client-name" class="border border-gray-200 outline-[#6E2F8E] mt-1 block w-full text-md p-2 h-auto rounded-md sm:text-sm" required>
+                        </div>
+                        <div>
+                            <label for="industry" class="text-md font-bold block text-sm font-medium text-gray-700">Industry/What They Do</label>
+                            <input type="text" id="industry" name="industry" class="border border-gray-200 outline-[#6E2F8E] mt-1 block w-full text-md p-2 h-auto rounded-md sm:text-sm" required>
+                        </div>
+                        <div>
+                            <label for="gwc-account-manager" class="text-md font-bold block text-sm font-medium text-gray-700">GWC Account Manager</label>
+                            <input type="text" id="gwc-account-manager" name="gwc-account-manager" class="border border-gray-200 outline-[#6E2F8E] mt-1 block w-full text-md p-2 h-auto rounded-md sm:text-sm" required>
+                            <ul id="account-manager-suggestions" class="bg-white border border-gray-200 rounded-md mt-1 hidden"></ul>
+                        </div>
+                        <div>
+                            <label for="gwc-project-manager" class="text-md font-bold block text-sm font-medium text-gray-700">GWC Project Manager/Lead</label>
+                            <input type="text" id="gwc-project-manager" name="gwc-project-manager" class="border border-gray-200 outline-[#6E2F8E] mt-1 block w-full text-md p-2 h-auto rounded-md sm:text-sm" required>
+                            <ul id="project-manager-suggestions" class="bg-white border border-gray-200 rounded-md mt-1 hidden"></ul>
+                        </div>
+                    </div>
+                    <div id="domo-contacts-section" class="mt-8">
+                        <!-- <div class="border-t border-gray-200 pt-5">
+                            <h3 class="text-md font-semibold leading-6 text-gray-900 mb-4">DOMO Contact</h3>
+                            <div class="text-md grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <div>
+                                    <label for="domo-contact-person-1" class="text-md font-bold block text-sm font-medium text-gray-700">DOMO Contact Person</label>
+                                    <input type="text" id="domo-contact-person-1" name="domo-contact-person-1" class="border border-gray-200 outline-[#6E2F8E] mt-1 block w-full text-md p-2 h-auto rounded-md sm:text-sm" required>
+                                    <ul id="domo-contact-suggestions-1" class="hidden border border-gray-200 mt-1 bg-white rounded-md shadow-lg"></ul>
+                                </div>
+                                <div>
+                                    <label for="domo-contact-email-1" class="text-md font-bold block text-sm font-medium text-gray-700">DOMO Contact Email</label>
+                                    <input type="email" id="domo-contact-email-1" name="domo-contact-email-1" class="border border-gray-200 outline-[#6E2F8E] mt-1 block w-full text-md p-2 h-auto rounded-md sm:text-sm" required>
+                                </div>
+                            </div>
+                        </div> -->
+                    </div>
+                    
+                    <button type="button" id="add-domo-contact" class="mt-5 bg-[#468CCA] text-white px-4 py-2 rounded-md hover:bg-[#000]">Add Another DOMO Contact</button>
+                    
+                    <div id="client-contacts-section" class="mt-8">
+                        <div class="border-t border-gray-200 pt-5">
+                            <h3 class="text-md font-semibold leading-6 text-gray-900 mb-4">Client Contact</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <div>
+                                    <label for="client-contact-person-1" class="text-md font-bold block text-sm font-medium text-gray-700">Client Contact Person</label>
+                                    <input type="text" id="client-contact-person-1" name="client-contact-person-1" class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-md p-2 h-auto rounded-md   sm:text-sm" >
+                                </div>
+                                <div>
+                                    <label for="client-email-1" class="text-md font-bold block text-sm font-medium text-gray-700">Client Email</label>
+                                    <input type="email" id="client-email-1" name="client-email-1" class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-md p-2 h-auto rounded-md   sm:text-sm" >
+                                </div>
+                                <div>
+                                    <label for="client-phone-1" class="text-md font-bold block text-sm font-medium text-gray-700">Contact Mobile Number</label>
+                                    <input type="text" id="client-phone-1" name="client-phone-1" class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-md p-2 h-auto rounded-md   sm:text-sm" >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" id="add-client-contact" class=" mt-5 bg-[#468CCA] text-white px-4 py-2 rounded-md hover:bg-[#000]">Add Another Client Contact</button>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-8">
+                       
+                        <div>
+                            <label for="project-date" class="text-md font-bold block text-sm font-medium text-gray-700">Lead Date</label>
+                            <input type="date" id="project-date"  name="project-date" class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-md p-2 h-auto rounded-md   sm:text-sm" required>
+                        </div>
+                        <div>
+                            <label for="innovation-project" class="text-md font-bold block text-sm font-medium text-gray-700">Innovation Project or Not</label>
+                            <select id="innovation-project" name="innovation-project" class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-md py-2.5 px-2 h-auto rounded-md   sm:text-sm" required>
+                                <option value="" class="bg-grey-300">Select Option</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                       
+                    </div>
+                    <div>
+                        <label for="project-description" class="text-md font-bold block text-sm font-medium text-gray-700">Project Description</label>
+                        <textarea id="project-description"  name="project-description"  class="border border-gray-200 outline-[#6E2F8E] mt-1  resize-none block w-full text-md   rounded-md   sm:text-sm" required></textarea>
+                    </div>
+                    <div class="pt-6 flex justify-center">
+                        <button type="submit" class="text-md bg-green-500 text-white  px-6 py-2 rounded-md hover:bg-green-600">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- <div class="flex min-h-screen p-5">
+        <div class="bg-[#ffff] text-white p-5 w-[250px] rounded-2xl hidden md:block ">
+            <a href="index.html"><img src="./static/img/logo.svg" class="w-30 h-auto mb-5 pl-4 pr-4" alt="Logo"></a>
+            <a href="index.html" class="flex items-center justify-between text-black no-underline p-3 mb-2 rounded-lg transition-colors duration-300 hover:bg-[#9dd1fa] ">
+                <span class="font-medium">Home</span>
+                <img src="./static/img/home.svg" class="w-5 h-auto" alt="Plus Icon">
+            </a>
+            <a href="addprojects.html" class="flex items-center justify-between text-black no-underline p-3 mb-2 rounded-lg transition-colors duration-300 hover:bg-[#9dd1fa] ">
+                <span class="font-medium">Add Project</span>
+                <img src="./static/img/plus.svg" class="w-5 h-auto" alt="Plus Icon">
+            </a>
+            <a href="./listProject.html" class="flex items-center justify-between text-black no-underline p-3 mb-2 rounded-lg transition-colors duration-300 hover:bg-[#9dd1fa] ">
+                <span class="font-medium">List Project</span>
+                <img src="./static/img/list.svg" class="w-5 h-auto" alt="List Icon">
+            </a>
+        
+        </div>
+        <div class="flex-1 ml-5">
+            <div class="bg-white p-8 rounded-2xl shadow-md">
+                <h2 class="text-3xl font-bold mb-6">Project Creation</h2>
+                <form id="project-form" class="space-y-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                            <label for="project-name" class="text-xl font-bold block text-sm font-medium text-gray-700">Project Name</label>
+                            <input type="text" id="project-name" name="project-name" class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="client-name" class="text-xl block text-sm font-medium text-gray-700">Client Name</label>
+                            <input type="text" id="client-name" name="client-name" class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="industry" class="text-xl block text-sm font-medium text-gray-700">Industry/What They Do</label>
+                            <input type="text" id="industry" name="industry" class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="gwc-account-manager" class="text-xl block text-sm font-medium text-gray-700">GWC Account Manager</label>
+                            <input type="text" id="gwc-account-manager" name="gwc-account-manager" class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="gwc-project-manager" class="text-xl block text-sm font-medium text-gray-700">GWC Project Manager/Lead</label>
+                            <input type="text" id="gwc-project-manager" name="gwc-project-manager" class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                        </div>
+                    </div>
+                    <div id="domo-contacts-section" class="mt-8">
+                       
+                    </div>
+                    <button type="button" id="add-domo-contact" class="mt-5 bg-[#468CCA] text-white px-4 py-2 rounded-md hover:bg-[#000]">Add Another DOMO Contact</button>
+                    <div id="client-contacts-section" class="mt-8">
+                       
+                    </div>
+                    <button type="button" id="add-client-contact" class=" mt-5 bg-[#468CCA] text-white px-4 py-2 rounded-md hover:bg-[#000]">Add Another Client Contact</button>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-8">
+                        <div>
+                            <label for="project-description" class="text-xl block text-sm font-medium text-gray-700">Project Description</label>
+                            <textarea id="project-description"  name="project-description"  class="border border-gray-200 outline-[#6E2F8E] mt-1  resize-none block w-full text-2xl   rounded-md   sm:text-sm"></textarea>
+                        </div>
+                        <div>
+                            <label for="innovation-project" class="text-xl block text-sm font-medium text-gray-700">Innovation Project or Not</label>
+                            <select id="innovation-project" name="innovation-project" class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl py-2.5 px-2 h-auto rounded-md   sm:text-sm">
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="project-date" class="text-xl block text-sm font-medium text-gray-700">Date</label>
+                            <input type="date" id="project-date"  style="font-size: 20px;"name="project-date" class="border border-gray-200 outline-[#6E2F8E] mt-1  block w-full text-2xl p-2 h-auto rounded-md   sm:text-sm">
+                        </div>
+                    </div>
+                    <div class="pt-6 flex justify-center">
+                        <button type="submit" class="text-xl bg-green-500 text-white  px-6 py-2 rounded-md hover:bg-green-600">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div> -->
+   <script>
+      function showHoverImg(element) {
+            const defaultImg = element.querySelector('[id^="default-img"]');
+            const hoverImg = element.querySelector('[id^="hover-img"]');
+            defaultImg.style.display = 'none';
+            hoverImg.style.display = 'block';
+        }
+
+        function hideHoverImg(element) {
+            const defaultImg = element.querySelector('[id^="default-img"]');
+            const hoverImg = element.querySelector('[id^="hover-img"]');
+            defaultImg.style.display = 'block';
+            hoverImg.style.display = 'none';
+        }
+   </script>
+    <script src="editproject.js"></script>
+    <script src="domo.js"></script>
+
+</body>
+</html>

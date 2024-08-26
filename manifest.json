@@ -1,0 +1,59 @@
+{
+  "name": "GWC-ProjectTracker",
+  "version": "1.0.0",
+  "size": {
+    "width": 6,
+    "height": 2
+  },
+  "mapping": [
+    {
+      "alias": "emp_ds",
+      "dataSetId": "7af04ae2-a6c7-49f6-a9e9-a340f1a235f8",
+      "fields": []
+    },
+    {
+      "alias": "domo_contact",
+      "dataSetId": "ca72d657-9b88-4138-b878-28463d751ff5",
+      "fields": []
+    }
+
+  ],
+  "collections": [
+    {
+      "name": "ProjectTrackerDB-NewSet",
+      "schema": {
+        "columns": [
+          { "name": "projectName", "type": "STRING" },
+          { "name": "clientName", "type": "STRING" },
+          { "name": "industry", "type": "STRING" },
+          { "name": "gwcAccountManager", "type": "STRING" },
+          { "name": "gwcProjectManager", "type": "STRING" },
+          { "name": "projectDescription", "type": "STRING" },
+          { "name": "innovationProject", "type": "STRING" },
+          { "name": "projectLeadDate", "type": "STRING" },
+          { "name": "domoContacts", "type": "STRING" },
+          { "name": "clientContacts", "type": "STRING" },
+          { "name": "PreSalesData", "type": "STRING" },
+          { "name": "ProjectInitiationData", "type": "STRING" },
+          { "name": "ProjectExecutionData", "type": "STRING" },
+          { "name": "ProjectClosureData", "type": "STRING" },
+          { "name": "ProjectOverallStatus", "type": "STRING" },
+          { "name": "gwcAccountManagerDomoId", "type": "STRING"},
+          { "name": "gwcAccountManagerEmail", "type": "STRING"},
+          { "name": "gwcProjectManagerEmail", "type": "STRING"},
+          {"name": "gwcProjectManagerDomoId", "type": "STRING"},
+          {"name": "ProjectPresalesStatus", "type": "STRING"},
+          {"name": "ProjectInitiationStatus", "type": "STRING"},
+          {"name": "ProjectExecutionStatus", "type": "STRING"},
+          {"name": "ProjectClosureStatus", "type": "STRING"},
+          { "name": "ProjectArchieveStatus", "type": "STRING" }
+
+        ]
+      },
+      "syncEnabled": true
+    }
+  ],
+  "fileName": "manifest.json",
+  "id": "801ee9fa-50e3-46a8-a694-04384249ae47",
+  "proxyId": "6da526b6-f5e3-4310-bd20-2910e657cc03"
+}

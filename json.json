@@ -1,0 +1,17 @@
+{
+    "projectName": "Project 2",
+    "clientName": "asdasd",
+    "industry": "asd",
+    "gwcAccountManager": "sdsdf",
+    "gwcProjectManager": "asdasd",
+    "projectDescription": "asdsadasd",
+    "innovationProject": "yes",
+    "projectLeadDate": "2024-06-24",
+    "domoContacts": "[{\"person\":\"asdasd\",\"email\":\"Domo@gmail.com\"}]",
+    "clientContacts": "[{\"person\":\"sfsdf\",\"email\":\"Domo@gmail.com\",\"phone\":\"646456\"}]",
+    "PreSalesData": "{\"status\":null,\"comments\":[{\"date\":\"2024-05-30\",\"comment\":\"asddas\"}],\"POCdevelopers\":[{\"name\":\"asdasdasd\",\"email\":\"sd@gmail.com\"},{\"name\":\"asdasdasd\",\"email\":\"sdasda@gmail.com\"}],\"checklist\":[{\"id\":\"1\",\"engagement\":\"yes\",\"comment\":\"asdasd\"},{\"id\":\"2\",\"engagement\":\"\",\"comment\":\"\"},{\"id\":\"3\",\"engagement\":\"\",\"comment\":\"\"},{\"id\":\"4\",\"engagement\":\"\",\"comment\":\"\"},{\"id\":\"5\",\"engagement\":\"\",\"comment\":\"\"},{\"id\":\"6\",\"engagement\":\"\",\"comment\":\"\"},{\"id\":\"7\",\"engagement\":\"yes\",\"comment\":\"asdasdasd\"},{\"id\":\"8\",\"engagement\":\"\",\"comment\":\"\"}],\"OverallStageStatus\":\"Active\"}",
+    "ProjectInitiationData": "{\"OverallStageStatus\":\"Not Started\"}",
+    "ProjectExecutionData": "{\"OverallStageStatus\":\"Not Started\"}",
+    "ProjectClosureData": "{\"OverallStageStatus\":\"Not Started\"}",
+    "ProjectOverallStatus": "Active"
+}

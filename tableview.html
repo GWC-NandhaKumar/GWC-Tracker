@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Dashboard - Add Project Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400&family=Poppins&display=swap"
+        rel="stylesheet">
+        <script src="./static/lib/tailwindcss.js"></script>
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+        }
+    </style>
+    <link rel="stylesheet" href="./side_bar.css">
+
+</head>
+
+<body class="bg-[#fafdff]">
+
+    <div id="notification"
+        class="hidden fixed top-5 right-5 max-w-xs w-full p-4 border-l-4 rounded-lg shadow-lg transition-transform transform duration-300 ease-in-out translate-y-10">
+        <span id="notification-message" class="text-white text-sm font-medium"></span>
+    </div>
+
+    <div class="flex min-h-screen p-5">
+        <div class="bg-[#006ca5] text-white p-5 w-[250px] rounded-2xl hidden md:block ">
+            <a href="index.html"><img src="./static/img/logo.svg"
+                    class="w-30 h-[70px] object-contain mb-5 pl-4 pr-4 bg-[#ffff]" alt="Logo"></a>
+            <a href="index.html"
+                class="flex items-center justify-between no-underline p-3 mb-2 text-[#ffff]  font-bold rounded-lg transition-colors duration-300 hover:bg-[#9dd1fa] hover:text-[#000] "
+                id="hover-area" onmouseover="showHoverImg(this)" onmouseout="hideHoverImg(this)">
+                <span class="">Home</span>
+
+                <img src="./static/img/home_white.svg" id="default-img" class="w-5 h-auto " alt="Plus Icon">
+                <img src="./static/img/home.svg" id="hover-img" class="w-5 h-auto " alt="Plus Icon">
+            </a>
+            <a href="addprojects.html" class="flex items-center justify-between text-[#ffff]  font-bold no-underline p-3 mb-2 rounded-lg transition-colors duration-300 hover:bg-[#9dd1fa]  hover:text-[#000]" onmouseover="showHoverImg(this)" onmouseout="hideHoverImg(this)">
+                <span class="">Add Prospect </span>
+                <img src="./static/img/plus_white.svg" id="default-img" class="w-5 h-auto" alt="Plus Icon">
+                <img src="./static/img/plus.svg" id="hover-img" class="w-5 h-auto" alt="Plus Icon">
+            </a>
+            <a href="./listProject.html"
+                class="flex items-center justify-between text-[#ffff]  font-bold  no-underline p-3 mb-2 rounded-lg transition-colors duration-300   hover:bg-[#9dd1fa]  hover:text-[#000]"
+                onmouseover="showHoverImg(this)" onmouseout="hideHoverImg(this)">
+                <span class="">Project List</span>
+                <img src="./static/img/list_white.svg" id="default-img" class="w-5 h-auto" alt="List Icon">
+                <img src="./static/img/list.svg" id="hover-img" class="w-5 h-auto" alt="List Icon">
+            </a>
+            <a href="./archieve_list.html"
+                class="flex items-center justify-between text-[#ffff]  font-bold  no-underline p-3 mb-2 rounded-lg transition-colors duration-300 hover:bg-[#9dd1fa] hover:text-[#000] "
+                onmouseover="showHoverImg(this)" onmouseout="hideHoverImg(this)">
+                <span class="">Archieve Projects</span>
+                <img src="./static/img/archive-files-icon_white.svg" id="default-img" class="w-5 h-auto"
+                    alt="Archieve Icon">
+                <img src="./static/img/archive-files-icon.svg" id="hover-img" class="w-5 h-auto" alt="Archieve Icon">
+            </a>
+
+            <!-- <button  onclick="generatePDF()">Pdf</button> -->
+
+        </div>
+      
+        <div class="w-full p-5  ">
+            <iframe src="https://gwcteq-partner.domo.com/embed/card/private/kZAgX" width="100%" height="300" marginheight="0" marginwidth="0" frameborder="0"></iframe>
+            <iframe src="https://gwcteq-partner.domo.com/embed/card/private/pQJn6" width="100%" height="300" marginheight="0" marginwidth="0" frameborder="0"></iframe>
+            <iframe src="https://gwcteq-partner.domo.com/embed/card/private/qYKor" width="100%" height="300" marginheight="0" marginwidth="0" frameborder="0"></iframe>
+
+        </div>
+        
+        
+        
+        
+        
+        
+    </div>
+    
+   
+
+    <script>
+        function showHoverImg(element) {
+            const defaultImg = element.querySelector('[id^="default-img"]');
+            const hoverImg = element.querySelector('[id^="hover-img"]');
+            defaultImg.style.display = 'none';
+            hoverImg.style.display = 'block';
+        }
+
+        function hideHoverImg(element) {
+            const defaultImg = element.querySelector('[id^="default-img"]');
+            const hoverImg = element.querySelector('[id^="hover-img"]');
+            defaultImg.style.display = 'block';
+            hoverImg.style.display = 'none';
+        }
+    </script>
+    <script src="domo.js"></script>
+
+</body>
+
+</html>

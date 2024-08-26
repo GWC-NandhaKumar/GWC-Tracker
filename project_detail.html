@@ -1,0 +1,840 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Dashboard - Add Project Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400&family=Poppins&display=swap" rel="stylesheet">
+    <script src="./static/lib/tailwindcss.js"></script>
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+        }
+        .container {
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+          }
+          
+          .progress_container {
+            height: 55px;
+            max-width: 100%;
+            position: relative;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            flex-direction: column;
+            align-items: center;
+          }
+          
+          .progress_container::before {
+            content: "";
+            height: 5px;
+            width: 0.2px;
+            background-color: #ced6d5 !important ;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: -1;
+          }
+          
+          @media (min-width: 810px) {
+            .progress_container {
+              width: 500px;
+              height: 10rem;
+              /* background-color: #000; */
+              flex-direction: row;
+            }
+          
+            .progress_container::before {
+                width: 500px;
+              /* height: 0.2rem; */
+              top: 50%;
+              left: 0;
+              transform: translateY(-50%);
+            }
+          }
+          
+          .progress_bar {
+            height: 0%;
+            width: 0.2px;
+            background-color: #090979 !important ;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: -1;
+            transition: 0.4s ease;
+          }
+          
+          @media (min-width: 810px) {
+            .progress_bar {
+              width: 0%;
+              height: 5px;
+              background-color: #090979 !important ;
+              top: 50%;
+              left: 0;
+              transform: translateY(-50%);
+            }
+          }
+          
+          .progress_circle {
+            width: 7px;
+            height: 7px;
+            position: relative;
+            aspect-ratio: 1;
+            color: #2f2e41 ;
+            background-color: #fff ;
+            border: 0.2px solid #ced6d5 !important;
+            border-radius: 30%;
+            font-size: 2px;
+            transition: 0.4s ease;
+            position: relative;
+            box-shadow: #ced6d5 0px 0px 0px 10px ;
+          }
+          
+          @media (min-width: 810px) {
+            .progress_circle {
+              width: 7px;
+              height: 7px;
+              position: relative;
+              aspect-ratio: 1;
+              color: #2f2e41 ;
+              background-color: #fff ;
+              border: 0.2px solid #ced6d5 !important;
+              border-radius: 30%;
+              font-size: 2px;
+              transition: 0.4s ease;
+              position: relative;
+              box-shadow: #ced6d5 0px 0px 0px 10px ;
+            }
+          }
+          
+          .progress_circle.active {
+            width: 7px;
+            height: 7px;
+            border-radius: 30%; 
+            color: #090979 !important;
+            position: relative;
+            font-size: 2px;
+            border: 2px solid #090979 ;
+            background-color: #fff !important;
+            box-shadow: #090979 0px 0px 0px 10px ;
+          }
+          
+          .progress_span {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            line-height: 20px;
+          }
+          .text_align{
+            position: absolute;
+            width:250px;
+            top:18px;
+            right: -120px;
+            content: '';
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 10;
+            text-align: center;
+
+          }
+
+          .text_align_top{
+            position: absolute;
+            width:250px;
+            top:-40px;
+            right: -120px;
+            content: '';
+            font-size: bold;
+            font-weight: 400;
+            z-index: 10;
+            text-align: center;
+          }
+
+          .tooltip {
+            position: relative;
+            display: inline-block;
+            border-bottom: 1px dotted black;
+          }
+          
+          .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 150px;
+            height: 30px;
+            background-color: black;
+            color: #fff;
+            font-size: 16px;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 0;
+            
+            /* Position the tooltip */
+            position: absolute;
+            z-index: 1;
+            top: -75px;
+            left: -60px;
+          }
+          
+          .tooltip:hover .tooltiptext {
+            visibility: visible;
+          }
+
+          .flex_text{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            
+          }
+          .example::-webkit-scrollbar {
+            display: none;
+        }
+        
+
+        .example {
+          -ms-overflow-style: none;  
+          scrollbar-width: none;  
+        }
+         
+          
+    </style>
+</head>
+<body class="bg-[#fafdff]">
+    <div id="deleteModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center  z-40 hidden">
+        <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Confirm Deletion</h2>
+            <p class="text-gray-600 mb-6">Are you sure you want to delete this project? This action cannot be undone.</p>
+            <div class="flex justify-end space-x-3">
+                <button id="cancelDelete" class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">No</button>
+                <button id="confirmDelete" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Yes, Delete</button>
+            </div>
+        </div>
+    </div>
+    
+    
+    <div class="flex flex-col space-y-4">
+        <div class="p-2 flex space-x-4">
+            <!-- Back Button -->
+            <div class="border rounded-md p-2 bg-teal-600 w-fit hover:bg-black transition duration-300 ease-in-out">
+                <a href="listProject.html">
+                    <p class="font-medium text-white">Back</p>
+                </a>
+            </div>
+            <!-- Delete Button -->
+            <!-- <div class="border rounded-md p-2 bg-red-300 w-fit hover:bg-red-500 transition duration-300 ease-in-out">
+                <button id="btn">
+                    <p class="font-medium text-white">Delete</p>
+                </button>
+            </div> -->
+        </div>
+    </div>
+    
+    
+        <div class="flex p-2 gap-6">
+            <div class="">
+                
+                <div class="flex items-center gap-2 pb-1 ">
+                    <label for="" class="border text-[#fff] bg-[#090979] py-3 text-center font-medium text-md w-[250px] rounded-sm ">Project Name</label>
+                    <input type="text" class="border text-[#090979] outline-[#208DE4] py-3 text-center font-bold text-md w-[250px] rounded-sm text-[14px]  bg-[#d5f0f4]" id="project_name"  readonly>
+                </div>
+                
+                <div class="flex items-center gap-2 pb-1 ">
+                    <label for="" class="border text-[#fff] bg-[#090979] py-3 text-center font-medium text-md w-[250px] rounded-sm ">Client Name</label>
+                    <input type="text" class="border text-[#090979] outline-[#208DE4] py-3 text-center font-bold text-md w-[250px] rounded-sm text-[14px]  bg-[#d5f0f4]" id="project_client" readonly>
+                </div>
+                
+                <div class="flex items-center gap-2 pb-1 ">
+                    <label for="" class="border text-[#fff] bg-[#090979] py-3 text-center font-medium text-md w-[250px] rounded-sm ">Industry</label>
+                    <input type="text" class="border text-[#090979] outline-[#208DE4] py-3 text-center font-bold text-md w-[250px] rounded-sm text-[14px]  bg-[#d5f0f4]" id="project_industry" readonly>
+                </div>
+                
+                <div class="flex items-center gap-2 pb-1 ">
+                    <label for="" class="border text-[#fff] bg-[#090979] py-3 text-center font-medium text-md w-[250px] rounded-sm ">ProjectManager</label>
+                    <input type="text" class="border text-[#090979] outline-[#208DE4] py-3 text-center font-bold text-md w-[250px] rounded-sm text-[14px]  bg-[#d5f0f4] " id="project_ProjectManager" readonly>
+                </div>
+                
+                <div class="flex items-center gap-2 pb-1 ">
+                    <label for="" class="border text-[#fff] bg-[#090979] py-3 text-center font-medium text-md w-[250px] rounded-sm ">AccountManager</label>
+                    <input type="text" class="border text-[#090979] outline-[#208DE4] py-3 text-center font-bold text-md w-[250px] rounded-sm text-[14px]  bg-[#d5f0f4] " id="project_AccountManager" readonly>
+                </div>
+                
+                <div class="flex items-center gap-2 pb-1 ">
+                    <label for="" class="border text-[#fff] bg-[#090979] py-3 text-center font-medium text-md w-[250px] rounded-sm ">Domo Client</label>
+                    <input type="text" class="border text-[#090979] outline-[#208DE4] py-3 text-center font-bold text-md w-[250px] rounded-sm text-[14px]  bg-[#d5f0f4]" id="domo_client" readonly>
+                </div>
+                
+                <div class="flex items-center gap-2 pb-1 ">
+                    <label for="" class="border text-[#fff] bg-[#090979] py-3 text-center font-medium text-md w-[250px] rounded-sm ">Project Lead Date</label>
+                    <input type="text" class="border text-[#090979] outline-[#208DE4] py-3 text-center font-bold text-md w-[250px] rounded-sm text-[14px]  bg-[#d5f0f4] " id="project_projectLeadDate" readonly>
+                </div>
+                
+                
+    
+                <div class="flex items-center gap-2 pb-1 ">
+                    <div for="" class="border text-[#fff] bg-[#090979] py-3 text-center font-medium text-md w-[250px] rounded-md flex flex-col items-center justify-center gap-2  " >
+                        <img src="./static/img/users.svg" alt="" class="w-12 h-12 object-contain ">
+                        PoC team
+                    </div>
+                    <div class="border  text-center font-medium text-md w-[250px] h-[105px] rounded-md flex flex-col items-start justify-start px-2 overflow-y-auto outline-[#208DE4] bg-[#e1f4f3] example">
+                        <div class="" id="project_team"></div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 pb-1 ">
+                    <div for="" class="border text-[#fff] bg-[#090979] py-3 text-center font-medium text-md w-[250px] rounded-md flex flex-col items-center justify-center gap-2  " >
+                        <img src="./static/img/users.svg" alt="" class="w-12 h-12 object-contain">
+                        Project resource team
+                    </div>
+                    <div class="border  text-center font-medium text-md w-[250px] h-[105px] rounded-md flex flex-col items-start justify-start px-2 overflow-y-auto outline-[#208DE4] bg-[#e1f4f3] example">
+                        <div class="" id="project_team1"></div>
+                    </div>
+                </div>
+                
+                
+                
+            </div>
+            <div class="w-full ">
+                <div class="border mb-2">
+                    <div class="bg-[#4169e1] flex items-center gap-2 p-2">
+                        <img src="./static/img/increasing.svg" class="w-8 h-8 object-contain"  alt=""  >
+                        <p class="text-[#ffff] font-bold ">Project Life Cycle</p>
+                    </div>
+                    <div class="container">
+                        <div class="progress_container">
+                          <div class="progress_bar"></div>
+                          
+                          <div class="progress_circle active tooltip" id="pro_line_1" >
+                            <div class="text_align_top">
+                                <h3 class="flex_text" ><p class="text-[#090979] ml-4 mr-2 text-sm" id="date_1"></p><img src="./static/img/calendar.gif" class="w-5 h-5 object-contain"> </h3>
+                            </div>
+                            <span class="tooltiptext" id="stage_1_status">Tooltip text</span>
+                            <span class="progress_span"></span>
+                            <div class="text_align">
+                                <h3 class="flex_text">Pre-Sales</h3>
+                            </div>
+                          </div>
+                          <div class="progress_circle tooltip"  id="pro_line_2">
+                            <div class="text_align_top">
+                                <h3 class="flex_text" ><p class="text-[#090979] ml-4 mr-2 text-sm" id="date_2"></p><img src="./static/img/calendar.gif" class="w-5 h-5 object-contain"> </h3>
+                            </div>
+                                <span class="tooltiptext" id="stage_2_status">Tooltip text</span>
+                          
+                            <span class="progress_span"></span>
+                            <div class="text_align">
+                                <h3 class="flex_text">Project Initiation</h3>
+
+                            </div>
+                          </div>
+                          <div class="progress_circle tooltip" id="pro_line_3">
+                            <div class="text_align_top">
+                                <h3 class="flex_text" ><p class="text-[#090979] ml-4 mr-2 text-sm" id="date_3"></p><img src="./static/img/calendar.gif" class="w-5 h-5 object-contain"> </h3>
+                            </div>
+                            <span class="tooltiptext" id="stage_3_status">Tooltip text</span>
+                            <span class="progress_span"></span>
+                            <div class="text_align">
+                                <h3 class="flex_text">Project Execution</h3>
+
+                            </div>
+                          </div>
+                          <div class="progress_circle tooltip" id="pro_line_4">
+                            <div class="text_align_top">
+                                <h3 class="flex_text" ><p class="text-[#090979] ml-4 mr-2 text-sm" id="date_4"></p><img src="./static/img/calendar.gif" class="w-5 h-5 object-contain"> </h3>
+                            </div>
+                            <span class="tooltiptext" id="stage_4_status">Tooltip text</span>
+                            <span class="progress_span"></span>
+                            <div class="text_align">
+                                <h3 class="flex_text">Project Closure</h3>
+
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+                <div class=" grid grid-cols-1  gap-4">
+                    <div class="">
+                        <div class="bg-[#006ca5] flex items-center gap-2 p-2">
+                            <img src="./static/img/comment.svg" class="w-8 h-8 object-contain"  alt=""  >
+                            <p class="text-[#ffff] font-bold text-[15px] ">Pre-Sales Comments</p>
+                        </div>
+                        <div class="border h-[100px] overflow-scroll example bg-[#d5f0f4] text-[#090979] font-bold">
+            
+                            <div class="" id="comments_1"></div>
+                        </div>
+                    </div>
+                    
+                  <div class="">
+                    <div class="bg-[#006ca5] flex items-center gap-2 p-2">
+                        <img src="./static/img/comment.svg" class="w-8 h-8 object-contain"  alt=""  >
+                        <p class="text-[#ffff] font-bold  text-[15px] ">Project Initiation</p>
+                    </div>
+                    <div class="border h-[100px] overflow-scroll example  bg-[#d5f0f4] text-[#090979] font-bold">
+        
+                        <div class="" id="comments_2"></div>
+                    </div>
+                  </div>
+
+                    <div class="">
+                        <div class="bg-[#006ca5] flex items-center gap-2 p-2">
+                            <img src="./static/img/comment.svg" class="w-8 h-8 object-contain"  alt=""  >
+                            <p class="text-[#ffff] font-bold text-[15px]  ">Project Execution Comments</p>
+                        </div>
+                        <div class="border h-[100px] overflow-scroll example bg-[#d5f0f4] text-[#090979] font-bold">
+            
+                            <div class="" id="comments_3"></div>
+                        </div>
+                    </div>
+    
+
+                    <div class="">
+                        <div class="bg-[#006ca5] flex items-center gap-2 p-2 ">
+                            <img src="./static/img/comment.svg" class="w-8 h-8 object-contain"  alt=""  >
+                            <p class="text-[#ffff] font-bold text-[15px]  ">Project Closure Comments</p>
+                        </div>
+                        <div class="border h-[100px] overflow-scroll example  bg-[#d5f0f4] text-[#090979] font-bold">
+            
+                            <div class="" id="comments_4"></div>
+                        </div>
+                    </div>
+    
+                    
+                </div>
+            </div>
+        </div> 
+    </div>
+    
+</body>
+<script src="domo.js"></script>
+<script>
+const queryString = window.location.search;
+const id = queryString.substring(1);
+console.log(id);
+
+
+domo.get(`/domo/datastores/v1/collections/ProjectTrackerDB-NewSet/documents/${id}`)
+    .then(response => { 
+
+          
+     
+        console.log(response)
+        
+        const currentdata = response.content;
+        const stage1 = JSON.parse(currentdata.PreSalesData);
+        const stage2 = JSON.parse(currentdata.ProjectInitiationData);
+        const stage3 = JSON.parse(currentdata.ProjectExecutionData);
+        const stage4 = JSON.parse(currentdata.ProjectClosureData);
+        
+        console.log(stage2.resources)
+
+        
+
+        const resourcedevelopers = stage2.resources;
+        if(stage2.resources === undefined){
+            document.getElementById("project_team1").innerHTML = `<div class="flex items-center gap-2">
+                <p class="font-bold text-[#090979]">&#10004;</p><p class="font-bold text-[#090979] text-[14px]">source Developers</p>
+             </div>`;;
+        }
+        else{
+            if(resourcedevelopers.OverallStageStatus === 'Not Started' || resourcedevelopers.length == 0 ){
+      
+    
+                // console.log(`Name: ${developer.name}, Email: ${developer.email}`);
+            
+            
+             document.getElementById("project_team1").innerHTML = `<div class="flex items-center gap-2">
+                                                                    <p class="font-bold text-[#090979]">&#10004;</p><p class="font-medium text-[#090979] text-[14px]">source Developers</p>
+                                                                 </div>`;
+         }
+ 
+ 
+         else{
+             // Accessing individual POC developers
+         let body_value1 = '';
+         resourcedevelopers.forEach(developer => {
+ 
+              body_value1 += `<div class="flex items-center gap-2  w-full">
+                                 <p class="font-bold text-[#090979] ">&#10004;</p><p class="font-bold text-[#090979] w-[250px] text-start m-0 text-[14px]">${developer.name}</p>
+                             </div>`;
+ 
+             console.log(`Name: ${developer.name}, Email: ${developer.email}`);
+         });
+        
+         document.getElementById("project_team1").innerHTML = body_value1;
+         }
+ 
+ 
+        }
+       
+
+        console.log(stage1.comments);
+        console.log(stage2.comments);
+        console.log(stage3.comments);
+        console.log(stage4.comments);
+
+        const stage1_Days = stage1?.daysFromLeadToCurrent ?? "Active";
+        const stage2_Days = stage2?.daysFromLeadToCurrent ?? "Not Started";
+        const stage3_Days = stage3?.daysFromLeadToCurrent ?? "Not Started";
+        const stage4_Days = stage4?.daysFromLeadToCurrent ?? "Not Started";
+     
+        document.getElementById("date_1").innerHTML = stage1_Days;
+        document.getElementById("date_2").innerHTML = stage2_Days;
+        document.getElementById("date_3").innerHTML = stage3_Days;
+        document.getElementById("date_4").innerHTML = stage4_Days;
+        console.log('Stage 1 Days:', stage1_Days);
+        console.log('Stage 2 Days:', stage2_Days);
+        console.log('Stage 3 Days:', stage3_Days);
+        console.log('Stage 4 Days:', stage4_Days);
+        
+        if(stage1.comments === undefined || stage1.comments.length == 0){
+           
+            document.getElementById('comments_1').innerHTML ="No Comments";
+        }
+        else{
+            if(stage1.comments.length === 0 && stage1.comments.length == null ){ 
+            
+
+                document.getElementById('comments_1').innerHTML ="No Comments";
+
+            
+            }
+            else{
+
+                let  comments_value_1 = '';
+
+                for(let i = 0 ; i < stage1.comments.length ;i++ ){
+                
+        
+                comments_value_1 += `
+                <div class="px-3 py-2 flex gap-2 text-start text-[#090979]">
+                <p class=" text-[24px] font-bold mr-1"> &#x2022;</p> 
+                <p class="text-sm font-bold mt-2 w-[120px]">${stage1.comments[i].date}</p>
+                <p class="text-sm font-bold mt-2">-</p>
+                <p class="text-sm font-bold mt-2 w-full">${stage1.comments[i].comment}</p>
+                </div>
+                `;
+                
+                };
+                document.getElementById('comments_1').innerHTML = comments_value_1;
+        
+            }
+
+        }
+
+    if(stage2.comments === undefined || stage2.comments.length == 0){
+        document.getElementById('comments_2').innerHTML ="No Comments";
+    }
+    else{
+    if(stage2.comments.length === 0 && stage2.comments.length == null ){ 
+
+        document.getElementById('comments_2').innerHTML ="No Comments";
+
+     
+    }
+    else{
+
+        let  comments_value_2 = '';
+
+        for(let i = 0 ; i < stage2.comments.length ;i++ ){
+        
+  
+          comments_value_2 += `
+           <div class="px-3 py-2 flex gap-2 text-start text-[#090979]">
+          <p class="text-[#090979] text-[24px] font-bold mr-1"> &#x2022;</p> 
+          <p class="text-sm font-medium mt-2 w-[120px] ">${stage2.comments[i].date}</p>
+          <p class="text-sm font-medium mt-2">-</p>
+          <p class="text-sm font-medium mt-2 w-full">${stage2.comments[i].comment}</p>
+         </div>
+          `;
+         
+         };
+         document.getElementById('comments_2').innerHTML = comments_value_2;
+  
+     }
+   
+    }
+   
+     
+      
+           
+    if(stage3.comments === undefined || stage3.comments.length == 0){
+        document.getElementById('comments_3').innerHTML ="No Comments";
+    }
+    else{
+    if(stage3.comments.length === 0 && stage3.comments.length == null ){ 
+
+        document.getElementById('comments_3').innerHTML ="No Comments";
+
+     
+    }
+    else{
+
+        let  comments_value_3 = '';
+
+        for(let i = 0 ; i < stage3.comments.length ;i++ ){
+        
+  
+          comments_value_3 += `
+           <div class="px-3 py-2 flex gap-2 text-start text-[#090979]">
+          <p class="text-[#090979] text-[24px] font-bold mr-1"> &#x2022;</p> 
+          <p class="text-sm font-medium mt-2 w-[120px]">${stage3.comments[i].date}</p>
+          <p class="text-sm font-medium mt-2">-</p>
+          <p class="text-sm font-medium mt-2 w-full">${stage3.comments[i].comment}</p>
+         </div>
+          `;
+         
+         };
+         document.getElementById('comments_3').innerHTML = comments_value_3;
+  
+     }
+   
+    }
+   
+     
+    
+    if(stage4.comments === undefined || stage4.comments.length == 0){
+        document.getElementById('comments_4').innerHTML ="No Comments";
+    }
+    else{
+    if(stage4.comments.length === 0 && stage4.comments.length == null ){ 
+
+        document.getElementById('comments_4').innerHTML ="No Comments";
+
+     
+    }
+    else{
+
+        let  comments_value_4 = '';
+
+        for(let i = 0 ; i < stage4.comments.length ;i++ ){
+        
+  
+          comments_value_4 += `
+           <div class="px-3 py-2 flex gap-2 text-start text-[#090979]">
+          <p class="text-[#090979] text-[24px] font-bold mr-1"> &#x2022;</p> 
+          <p class="text-sm font-medium mt-2 w-[120px] ">${stage4.comments[i].date}</p>
+          <p class="text-sm font-medium mt-2">-</p>
+          <p class="text-sm font-medium mt-2 w-full">${stage4.comments[i].comment}</p>
+         </div>
+          `;
+         
+         };
+         document.getElementById('comments_4').innerHTML = comments_value_4;
+  
+     }
+   
+    }
+        document.getElementById("stage_1_status").innerHTML = stage1.OverallStageStatus;
+        document.getElementById("stage_2_status").innerHTML = stage2.OverallStageStatus;
+        document.getElementById("stage_3_status").innerHTML = stage3.OverallStageStatus;
+        document.getElementById("stage_4_status").innerHTML = stage4.OverallStageStatus;
+
+        const progressBar = document.querySelector(".progress_bar");
+        const circles = document.querySelectorAll(".progress_circle");
+
+        
+        let currentActive = 0;
+        if(stage1.OverallStageStatus === "Active"){
+            currentActive = 1;
+        }
+        else if(stage1.OverallStageStatus === "Completed"){
+            currentActive = 1;
+            
+        }
+        else if(stage1.OverallStageStatus === "Not Started"){
+            currentActive = 0;
+        }
+
+        if(stage1.OverallStageStatus === "Completed"){
+
+            if(stage2.OverallStageStatus === "Active"){
+                currentActive = 2;
+            }
+            else if(stage2.OverallStageStatus === "Completed"){
+                currentActive = 2;
+                
+            }
+            else if(stage2.OverallStageStatus === "Not Started"){
+                currentActive = 0;
+            }
+    
+    
+        }
+
+        if(stage2.OverallStageStatus === "Completed"){
+     
+            if(stage3.OverallStageStatus === "Active"){
+                currentActive = 3;
+            }
+            else if(stage3.OverallStageStatus === "Completed"){
+                currentActive = 3;
+                
+            }
+            else if(stage3.OverallStageStatus === "Not Started"){
+                currentActive = 1;
+            } 
+    
+        }
+        if(stage3.OverallStageStatus === "Completed"){
+            if(stage4.OverallStageStatus === "Active"){
+                currentActive = 4;
+            }
+            else if(stage4.OverallStageStatus === "Completed"){
+                currentActive = 4;
+                
+            }
+            else if(stage4.OverallStageStatus === "Not Started"){
+                currentActive = 3;
+            }
+    
+           
+        }
+   
+        
+
+        
+            
+        const changeBarDisplay = function () {
+        
+        const actives = document.querySelectorAll(".active");
+        
+        if (window.innerWidth >= 375 && window.innerWidth < 810) {
+        progressBar.style.height = `${((actives.length - 1) / (circles.length - 1)) * 100}%`;
+        } else {
+        progressBar.style.width = `${((actives.length - 1) / (circles.length - 1)) * 100}%`;
+        }
+        };
+        
+        const updateCircleState = function () {
+        
+        circles.forEach((circle, i) => {
+        
+            currentActive == 0  ? circle.classList.remove("active") : circle.classList.remove("active")
+        i < currentActive ? circle.classList.add("active") : circle.classList.remove("active");
+        });
+        
+        changeBarDisplay();
+        
+        
+        };
+        
+        
+        
+        updateCircleState();
+
+        document.getElementById("project_name").value= currentdata['projectName'];
+        document.getElementById("project_client").value= currentdata['clientName'];
+        document.getElementById("project_industry").value= currentdata['industry'];
+        document.getElementById("project_ProjectManager").value= currentdata['gwcProjectManager'];
+        document.getElementById("project_AccountManager").value= currentdata['gwcAccountManager'];
+        document.getElementById("project_projectLeadDate").value= currentdata['projectLeadDate'];
+       
+        const dev_value = JSON.parse(currentdata['domoContacts']);
+
+        
+
+        const developer1 = dev_value[0];
+        //const developer2 = dev_value[1];
+
+        // Accessing properties of each developer
+        //const person1 = developer1.person;
+       // const email1 = developer1.email;
+        document.getElementById("domo_client").value= developer1.person;
+        
+
+        //const person2 = developer2.person;
+       // const email2 = developer2.email;
+
+//console.log(projectName, clientName, industry, gwcAccountManager, gwcProjectManager);
+
+       
+        
+       
+        // Extracting POCdevelopers
+        const POCdevelopers = stage1.POCdevelopers;
+        console.log(POCdevelopers);
+        if(POCdevelopers === undefined || POCdevelopers.length == 0 ){
+      
+    
+               // console.log(`Name: ${developer.name}, Email: ${developer.email}`);
+           
+           
+            document.getElementById("project_team").innerHTML = `<div class="flex items-center gap-2">
+                                                                   <p class="font-bold text-[#090979]">&#10004;</p><p class="font-bold text-[#090979] text-[14px]">POC Developers</p>
+                                                                </div>`;;
+        }
+
+
+        else{
+            // Accessing individual POC developers
+        let body_value = '';
+        POCdevelopers.forEach(developer => {
+
+             body_value += `<div class="flex items-center gap-2 ">
+                                <p class="font-bold text-[#090979]">&#10004;</p><p class="font-bold text-[#090979] text-start w-[250px] text-[14px]">${developer.name}</p>
+                            </div>`;
+
+           // console.log(`Name: ${developer.name}, Email: ${developer.email}`);
+        });
+       
+        document.getElementById("project_team").innerHTML = body_value;
+        }
+
+
+        
+        const resource_value = stage2.resources;
+
+        resource_value.forEach(res => {
+            console.log(`Name: ${res.name}, Email: ${res.email}`);
+        });
+
+        
+    })
+    .catch(error => {
+        console.error('Error fetching data:', error);
+    });
+
+    document.getElementById('btn').addEventListener('click', function() {
+    showDeleteModal(id);
+});
+
+// document.getElementById('btn').setAttribute('onclick', `showDeleteModal(${id})`);
+
+// function showDeleteModal(id) {
+
+//     console.log('showDeleteModal called with id:', id);
+//     document.getElementById('deleteModal').classList.remove('hidden');
+    
+//     document.getElementById('confirmDelete').onclick = function() {
+//         console.log('confirmDelete clicked');
+//         deleteproject(id);
+//         document.getElementById('deleteModal').classList.add('hidden');
+//     };
+//     document.getElementById('cancelDelete').onclick = function() {
+//         console.log('cancelDelete clicked');
+//         document.getElementById('deleteModal').classList.add('hidden');
+//     };
+// }
+
+// function deleteproject(id) {
+//     console.log('deleteproject called with id:', id);
+//     const endpoint = `/domo/datastores/v1/collections/ProjectTrackerDB-NewSet/documents/${id}`;
+    
+//     domo.delete(endpoint)
+//         .then(result => {
+//             console.log(`Document ${id} deleted successfully from collection`);
+
+//         })
+//         .catch(error => {
+//             console.error(`Failed to delete document ${id} from collection:`, error);
+//         });
+// }
+
+
+
+
+</script>
+</html>

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400&family=Poppins&display=swap" rel="stylesheet">
+    <script src="./static/lib/tailwindcss.js"></script>
+    <script src="./static/lib/html2pdf.js"></script>
+    <script src="./static/lib/jquery.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <!-- DataTables Buttons CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.dataTables.min.css">
+    <link rel="stylesheet" href="./side_bar.css">
+
+
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+
+        }
+        body::-webkit-scrollbar {
+    display: none;
+  }
+        .chart {
+            width: 100%;
+            max-width: 800px; /* Adjust as needed */
+            margin: 2rem auto; /* Center charts */        }
+
+        .bar {
+            fill: steelblue;
+        }
+
+        .bar:hover {
+            fill: orange;
+        }
+
+        .axis {
+            font-size: 14px;
+        }
+
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
+
+        /* Custom styles for grid and input fields */
+        .input-select {
+            border: 2px solid #ccc;
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            width: 100%;
+            max-width: 300px; /* Adjust as needed */
+            transition: border-color 0.3s ease;
+        }
+
+        .input-select:focus {
+            outline: none;
+            border-color: #4a90e2; /* Example focus color */
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="./side_bar.js"></script>
+
+  
+</head>
+<body id="body" class="bg-[#fafdff] text-gray-800">
+    <!-- <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer">TestLink</a> -->
+    <div class="md:flex md:min-h-screen md:p-5 md:shadow-md">
+        <div class="bg-[#006ca5] text-white p-5 w-[250px] rounded-2xl hidden md:block ">
+            <a href="index.html"><img src="./static/img/logo.svg" class="w-30 h-[70px] object-contain mb-5 pl-4 pr-4 bg-[#ffff]" alt="Logo"></a>
+            <a href="index.html" class="flex items-center justify-between no-underline p-3 mb-2   font-bold rounded-lg transition-colors duration-300 bg-[#9dd1fa] text-[#000] " id="hover-area" onmouseover="showHoverImg(this)" onmouseout="hideHoverImg(this)">
+                <span class="">Home</span>
+                
+                <!-- <img src="./static/img/home_white.svg" id="default-img" class="w-5 h-auto " alt="Plus Icon"> -->
+                <img src="./static/img/home.svg"  id="" class="w-5 h-auto " alt="Plus Icon">
+            </a>
+            <a href="addprojects.html" class="flex items-center justify-between text-[#ffff]  font-bold no-underline p-3 mb-2 rounded-lg transition-colors duration-300 hover:bg-[#9dd1fa]  hover:text-[#000]" onmouseover="showHoverImg(this)" onmouseout="hideHoverImg(this)">
+                <span class="">Add Prospect </span>
+                <img src="./static/img/plus_white.svg" id="default-img" class="w-5 h-auto" alt="Plus Icon">
+                <img src="./static/img/plus.svg" id="hover-img" class="w-5 h-auto" alt="Plus Icon">
+            </a>
+            <a href="./listProject.html" class="flex items-center justify-between text-[#ffff]  font-bold  no-underline p-3 mb-2 rounded-lg transition-colors duration-300   hover:bg-[#9dd1fa]  hover:text-[#000]" onmouseover="showHoverImg(this)" onmouseout="hideHoverImg(this)">
+                <span class="">Project List</span>
+                <img src="./static/img/list_white.svg" id="default-img" class="w-5 h-auto" alt="List Icon">
+                <img src="./static/img/list.svg" id="hover-img"  class="w-5 h-auto" alt="List Icon">
+            </a>
+            <a href="./archieve_list.html"
+            class="flex items-center justify-between text-[#ffff]  font-bold  no-underline p-3 mb-2 rounded-lg transition-colors duration-300 hover:bg-[#9dd1fa] hover:text-[#000] " onmouseover="showHoverImg(this)" onmouseout="hideHoverImg(this)">
+            <span class="">Archieve Projects</span>
+            <img src="./static/img/archive-files-icon_white.svg" id="default-img" class="w-5 h-auto" alt="Archieve Icon">
+            <img src="./static/img/archive-files-icon.svg" id="hover-img" class="w-5 h-auto" alt="Archieve Icon">
+         </a>
+
+            <!-- <button  onclick="generatePDF()">Pdf</button> -->
+        
+        </div>
+    
+        <div class="md:flex-1 md:ml-5 overflow-y-auto">
+            <div class="flex justify-between items-center md:mb-4">
+                <div class="flex items-center md:ml-4">
+                    <img src="./static/img/waving.png" class="w-8 h-auto mr-2" alt="Waving Hand Icon">
+                    <span class="text-xl font-bold">Welcome back</span>
+                </div>
+            
+                <div class="flex items-center space-x-4">
+                    <div class="relative flex items-center group">
+                        <img src="./static/img/table-view.svg" class="w-8 h-auto mr-2" alt="SharePoint Icon">
+                        <a href="./tableview.html" class="text-sm font-bold">
+                            Table View
+                        </a>
+                        <span class="text-sm text-gray-500"></span>
+                    </div>
+                    
+                    <div class="relative flex items-center group">
+                        <img src="./static/img/sharepoint.png" class="w-8 h-auto mr-2" alt="SharePoint Icon">
+                        <a href="https://www.microsoft365.com/mycontent/?auth=2&home=1" class="text-xl font-bold">
+                            SharePoint
+                        </a>
+                        <span class="text-sm text-gray-500">(Ctrl + Click)</span>
+                        <div class="absolute bottom-full left-0 z-10 mb-2 w-max px-2 py-1 text-xs text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                            Ctrl + Click
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+            
+            
+            <div class="p-4 bg-[#d4ebfc]  md:p-5 md:rounded-2xl md:shadow-md h-screen overflow-y-auto">
+                <div class="overflow-y-auto bg-[#d4ebfc]">
+                    <div class="grid grid-cols-1 gap-5 text-center">
+                        <div class="flex flex-col w-full gap-4 md:flex-row items-center justify-between">
+    
+                            <div class="relative w-full h-[150px] flex flex-col justify-center items-start gap-5 p-2 rounded-md overflow-hidden bg-gradient-to-r from-[#FE8F96] to-[#FFBD96] shadow-md" onmouseover="this.style.transform='translateY(-4px)';" onmouseout="this.style.transform='translateY(0)';">
+                                <h3 class="text-[18px] z-30  font-bold text-white">Total Projects</h3>
+                                <p class="text-2xl font-bold text-white text-center" id="total-projects">0</p>
+                                <div class="absolute w-28 h-28 bg-gradient-to-r from-[#FFA2AB] to-[#FFA2AB] rounded-full right-[-60px] top-[-30px] z-0 transition-transform duration-500"></div>
+                            </div>
+                        
+                            <div class="relative w-full h-[150px] flex flex-col justify-center items-start gap-5 p-2 rounded-md overflow-hidden bg-gradient-to-r from-purple-500 to-purple-200 shadow-md" onmouseover="this.style.transform='translateY(-4px)';" onmouseout="this.style.transform='translateY(0)';">
+                                <h3 class="text-[18px] z-30  font-bold text-white text-center">Active Projects</h3>
+                                <p class="text-2xl font-bold text-[#ffff]" id="active-projects">0</p>
+                                <div class="absolute w-28 h-28 bg-gradient-to-r from-purple-500 to-purple-200 rounded-full right-[-60px] top-[-30px]  z-0 transition-transform duration-500"></div>
+                            </div>
+    
+                            <div class="relative w-full h-[150px] flex flex-col justify-center items-start gap-5 p-2 rounded-md overflow-hidden bg-gradient-to-r to-[#80D9D1] from-[#2AD0B8] shadow-md" onmouseover="this.style.transform='translateY(-4px)';" onmouseout="this.style.transform='translateY(0)';">
+                                <h3 class="text-[18px] z-30  font-bold text-white text-center">Completed Projects</h3>
+                                <p class="text-2xl font-bold text-[#ffff]" id="completed-projects">0</p>
+                                <div class="absolute w-28 h-28 bg-gradient-to-r from-[#74E1D1] to-[#74E1D1] rounded-full right-[-60px] top-[-30px]  z-0 transition-transform duration-500"></div>
+                            </div>
+                            <div class="relative w-full h-[150px] flex flex-col justify-center items-start gap-5 p-2 rounded-md overflow-hidden bg-gradient-to-r from-[#8A2BE2] to-[#FF69B4] shadow-md" onmouseover="this.style.transform='translateY(-4px)';" onmouseout="this.style.transform='translateY(0)';">
+                                
+                                <div class="absolute w-28 h-28 bg-gradient-to-r from-[#9370DB] to-[#FFB6C1] rounded-full right-[-60px] top-[-30px]  transition-transform duration-500"></div>
+                                <h3 class="text-[18px] z-30 font-bold text-white text-center">Archived Projects</h3>
+                                <p class="text-2xl font-bold text-[#ffff]" id="archived-projects">0</p>
+                            </div>
+                            
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                        
+                            <div class="relative w-54 h-28 flex flex-col justify-center items-start gap-5 p-2 rounded-md overflow-hidden bg-gradient-to-r to-[#8EC9F9] from-[#208DE4] shadow-md" onmouseover="this.style.transform='translateY(-4px)';" onmouseout="this.style.transform='translateY(0)';">
+                                <h3 class="text-[18px] font-bold text-white text-center">Pre-Sales</h3>
+                                <p class="text-xl font-bold text-[#ffff]" id="pre-sales">0</p>
+                                <div class="absolute w-28 h-28 bg-gradient-to-r from-[#8EC9F9] to-[#208DE4] rounded-full -right-1/4 -top-1/4 z-0 transition-transform duration-500"></div>
+                            </div>
+    
+                            <div class="relative w-54 h-28 flex flex-col justify-center items-start gap-5 p-2 rounded-md overflow-hidden bg-gradient-to-r to-[#8EC9F9] from-[#208DE4] shadow-md" onmouseover="this.style.transform='translateY(-4px)';" onmouseout="this.style.transform='translateY(0)';">
+                                <h3 class="text-[18px] font-bold text-white text-center">Project Initiation</h3>
+                                <p class="text-xl font-bold text-[#ffff]" id="project-initiation">0</p>
+                                <div class="absolute w-28 h-28 bg-gradient-to-r from-[#8EC9F9] to-[#208DE4] rounded-full -right-1/4 -top-1/4 z-0 transition-transform duration-500"></div>
+                            </div>
+    
+                            <div class="relative w-54 h-28 flex flex-col justify-center items-start gap-5 p-2 rounded-md overflow-hidden bg-gradient-to-r to-[#8EC9F9] from-[#208DE4] shadow-md" onmouseover="this.style.transform='translateY(-4px)';" onmouseout="this.style.transform='translateY(0)';">
+                                <h3 class="text-[18px] font-bold text-white text-center">Project Execution</h3>
+                                <p class="text-xl font-bold text-[#ffff]" id="project-execution">0</p>
+                                <div class="absolute w-28 h-28 bg-gradient-to-r from-[#8EC9F9] to-[#208DE4] rounded-full -right-1/4 -top-1/4 z-0 transition-transform duration-500"></div>
+                            </div>
+    
+                            <div class="relative w-54 h-28 flex flex-col justify-center items-start gap-5 p-2 rounded-md overflow-hidden bg-gradient-to-r to-[#8EC9F9] from-[#208DE4] shadow-md" onmouseover="this.style.transform='translateY(-4px)';" onmouseout="this.style.transform='translateY(0)';">
+                                <h3 class="text-[18px] font-bold text-white text-center">Project Closure</h3>
+                                <p class="text-xl font-bold text-[#ffff]" id="project-closure">0</p>
+                                <div class="absolute w-28 h-28 bg-gradient-to-r from-[#8EC9F9] to-[#208DE4] rounded-full -right-1/4 -top-1/4 z-0 transition-transform duration-500"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex space-x-4 bg-[#d4ebfc] p-4 w-auto">
+                    <div class="flex flex-col space-y-2 w-full">
+                        <label for="gwcAccountManager" class="text-blue-500 font-bold">GWC Account Manager:</label>
+                        <select id="gwcAccountManager" class="p-2 border-2 border-blue-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300">
+                            <option value="">Select Account Manager</option>
+                        </select>
+                    </div>
+                    <div class="flex flex-col space-y-2 w-full">
+                        <label for="projectLead" class="text-green-500 font-bold">Project Lead:</label>
+                        <select id="projectLead" class="p-2 border-2 border-green-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-300">
+                            <option value="">Select Project Lead</option>
+                        </select>
+                    </div>
+                    <div class="flex flex-col space-y-2 w-full">
+                        <label for="domoContactName" class="text-pink-500 font-bold">Domo Contact Name:</label>
+                        <select id="domoContactName" class="p-2 border-2 border-pink-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300">
+                            <option value="">Select Domo Contact</option>
+                        </select>
+                    </div>
+                    <div class="flex flex-col space-y-2 w-full">
+                        <label for="preSalesStatus" class="text-purple-500 font-bold">Status:</label>
+                        <select id="preSalesStatus" class="p-2 border-2 border-purple-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-300">
+                            <option value="">Select Status</option>
+                        </select>
+                    </div>
+                    <button id="clearFilters" class="mt-4 p-2 bg-purple-500 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-300">Clear</button>
+                </div>
+  <!-- <div class="chart " id="project-counts-chart"></div>
+                    <div class="chart " id="project-manager-chart-bar"></div> -->
+                <div class="grid grid-cols-2 md:grid-cols-2 gap-2">
+                    <div class="chart "  id="project-status-chart"></div>
+                    <div class="chart" id="gwc-account-manager-chart"></div>
+                    <div class="chart hidden" id="project-manager-chart"></div>
+                    <div class="chart hidden" id="project-status-chart-pie"></div>
+                    <div class="chart " id="project-lead-date-chart"></div>
+                    <div class="chart hidden " id="project-industry-chart"></div>
+                    <div class="chart " id="domoContactChart"></div>
+                  
+
+                </div>
+            </div>
+     
+
+                
+                
+                <!-- <div class="container mx-auto py-8">
+                    <h6 >Presales Details</h6>
+                    <table id="presales-table" class="display nowrap w-full">
+                        <thead>
+                            <tr>
+                                <th>Client Name</th>
+                                <th>GWC Account Manager</th>
+                                <th>GWC Project Manager</th>
+                                <th>Status</th>
+                                <th>Project Comments/Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody id="presales-table-body">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="container mx-auto py-8">
+                    <table id="project-initiation-table" class="display nowrap w-full">
+                        <h6>Project Initiation Details</h6>
+                        <thead>
+                            <tr>
+                                <th>Client Name</th>
+                                <th>GWC Account Manager</th>
+                                <th>GWC Project Manager</th>
+                                <th>Proposed Start Date</th>
+                                <th>Proposed End Date</th>
+                                <th>Timeline</th>
+                                <th>Planned Resource Names</th>
+                                <th>Comments/Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody id="project-initiation-table-body">
+                        </tbody>
+                    </table>
+                </div> -->
+                
+                
+
+            </div>
+
+            
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+</body>
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<!-- DataTables Buttons JS -->
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+<!-- DataTables Buttons Excel JS -->
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+<!-- Optional: JSZip for Excel export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<!-- Optional: pdfmake for Excel export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/vfs_fonts.js"></script>
+    <script src="domo.js"></script>
+    <script src="app.js"></script>
+</html>
